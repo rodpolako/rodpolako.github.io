@@ -1373,7 +1373,6 @@ $(() => {
 	// Workaround for iOS devices to remove PGN filter for file selection
 	$(document).ready(function () {
 		var deviceAgent = navigator.userAgent.toLowerCase();
-		//var agentID = deviceAgent.match(/(iphone|ipod|ipad)/);
 		if (deviceAgent.match(/(iphone|ipod|ipad)/)) {
 			$('#openPGN').attr('accept', '');
 		}
