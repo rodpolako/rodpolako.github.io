@@ -23,7 +23,7 @@
 // -----------------------
 
 // Board & Overall configuration-related variables
-const version = "1.11.2";
+const version = "1.11.3";
 let board;
 let blankBoard;
 let pieceThemePath;
@@ -1368,6 +1368,18 @@ $(() => {
 	$(document).ready(function () {
 		$('[data-toggle="tooltip"]').tooltip();
 	});
+
+
+	// Workaround for iOS devices to remove PGN filter for file selection
+	//jQuery(document).ready(function($){
+	$(document).ready(function () {
+		var deviceAgent = navigator.userAgent.toLowerCase();
+		var agentID = deviceAgent.match(/(iphone|ipod|ipad)/);
+		if (agentID) {
+			$('#openPGN').attr('accept', '');
+		}
+	});
+
 
 	// Set up the color pickers
 	$(document).ready(function () {
