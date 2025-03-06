@@ -1352,6 +1352,7 @@ $(() => {
 
 	$("#light-color-block").on("colorchange", function () {
 		var color = $(this).wheelColorPicker("value");
+		$("#light-color-preview").css("background-color", color);
 		$("#Light-Color").val(color);
 		changecolor();
 	});
@@ -1371,6 +1372,10 @@ $(() => {
 
 
 	// Workaround for iOS devices to remove PGN filter for file selection
+	// See: 
+	// 		https://caniuse.com/input-file-accept
+	// 		https://stackoverflow.com/questions/47386981/input-type-file-attribute-accept-not-working-in-safari-on-macbook
+	// 		https://stackoverflow.com/questions/47664777/javascript-file-input-onchange-not-working-ios-safari-only
 	$(document).ready(function () {
 		var deviceAgent = navigator.userAgent.toLowerCase();
 		if (deviceAgent.match(/(iphone|ipod|ipad)/)) {
