@@ -1378,7 +1378,7 @@ $(() => {
 	// 		https://stackoverflow.com/questions/47664777/javascript-file-input-onchange-not-working-ios-safari-only
 	$(document).ready(function () {
 		var deviceAgent = navigator.userAgent.toLowerCase();
-		if (deviceAgent.match(/(iphone|ipod|ipad|applewebkit)/)) {
+		if (deviceAgent.match(/(iphone|ipod|ipad|macintosh|intel mac)/)) {
 			$('#openPGN').attr('accept', '');
 		}
 	});
