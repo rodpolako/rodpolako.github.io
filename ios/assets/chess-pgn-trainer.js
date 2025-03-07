@@ -1372,6 +1372,7 @@ $(() => {
 
 
 	// Workaround for iOS devices to remove PGN filter for file selection
+	// Issue: https://github.com/rodpolako/Chess-PGN-Trainer/issues/13
 	// See: 
 	// 		https://caniuse.com/input-file-accept
 	// 		https://stackoverflow.com/questions/47386981/input-type-file-attribute-accept-not-working-in-safari-on-macbook
