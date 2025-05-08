@@ -82,13 +82,14 @@ import * as dataTools from '../util/datatools-module.js';
 import * as colorTools from '../util/color-tools.js';
 
 // CSS Imports
+/*
 import annotationStyles from '../components/annotation/annotate.css' with { type: 'css' };
 import chessboardJSStyles from '../lib/chessboardjs/chessboard-1.0.0.css' with { type: 'css' };
 import minicolorsStyles from '../lib/jquery-minicolors/jquery.minicolors.css' with { type: 'css' };
 import coreAppStyles from '../../src/app/chess-pgn-trainer.css' with { type: 'css' };
 
 document.adoptedStyleSheets = [coreAppStyles, chessboardJSStyles, annotationStyles, minicolorsStyles];
-
+*/
 // Version number of the app
 $('#versionnumber').text(`${configuration.app.version}`);
 $('#versionnumber_sidebar').text(`${configuration.app.version}`);
