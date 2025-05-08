@@ -60,7 +60,8 @@ import configuration from './config.js';
 import PieceList from '../components/piece-list/piece-list-module.js';
 
 // Library Imports
-import { Chess } from '../lib/chess/chess1.20.0-esm.js';
+//import { Chess } from '../lib/chess/chess1.20.0-esm.js';
+import { Chess } from '../lib/chess/chess1.20.0-esm-original.js';
 /*
 	Source: https://github.com/jhlywa/chess.js
 
