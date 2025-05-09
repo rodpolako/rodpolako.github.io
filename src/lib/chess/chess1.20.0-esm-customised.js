@@ -1541,7 +1541,7 @@ export class Chess {
     }
     loadPgn(pgn, { strict = false, newlineChar = '\r?\n', } = {}) {
         function mask(str) {
-            return str.replace(/\\/g, '\\');
+            return str.replace(/\\/g, '\\\\');
         }
         function parsePgnHeader(header) {
             const headerObj = {};
@@ -2017,7 +2017,7 @@ export class Chess {
         return this._comments[this.fen()];
     }
     setComment(comment) {
-        this._comments[this.fen()] = comment.replace('{', '[').replace('}', ']');
+        this._comments[this.fen()] = comment.replace(/{/g, '[').replace(/}/g, ']');
     }
     /**
      * @deprecated Renamed to `removeComment` for consistency
