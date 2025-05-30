@@ -81,6 +81,11 @@ import * as audio from '../components/audio/audio-module.js';
 import * as dataTools from '../util/datatools-module.js';
 import * as colorTools from '../util/color-tools.js';
 
+// Name the app
+$('title').text(`${configuration.app.name}`);
+$('#title_sidebar').text(`${configuration.app.name}`);
+$('#title_topbar').text(`${configuration.app.name}`);
+
 // Version number of the app
 $('#versionnumber').text(`${configuration.app.version}`);
 $('#versionnumber_sidebar').text(`${configuration.app.version}`);

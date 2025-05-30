@@ -1,7 +1,7 @@
 const configuration = {
 	// Application Information
 	app: {
-		name: 'Chess PGN Trainer',
+		name: 'Chess PGN Trainer BETA',
 		version: '1.13.2',
 	},
 
