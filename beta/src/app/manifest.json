@@ -1,8 +1,8 @@
 {
     "name": "Chess PGN Trainer",
     "short_name": "Chess PGN Trainer",
-    "start_url": "/",
-    "id": "/",
+    "start_url": "/beta",
+    "id": "/beta",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#0066fd",
