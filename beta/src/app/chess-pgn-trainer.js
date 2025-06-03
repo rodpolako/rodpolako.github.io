@@ -1815,11 +1815,12 @@ $(() => {
 		}
 	});
 
+	/*
 	$(document).on('touchmove'),
 		function (e) {
 			e.preventDefault();
 		};
-
+	*/
 	//document.ontouchmove = function(e) {e.preventDefault()};
 });
 
