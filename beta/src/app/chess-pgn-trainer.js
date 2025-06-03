@@ -1814,6 +1814,14 @@ $(() => {
 			}
 		}
 	});
+
+	$('settings_modal_close').on('click', function () {
+		$(document.body).css('overflow', 'hidden');
+	});
+
+	$('btn_settingsClose').on('click', function () {
+		$(document.body).css('overflow', 'hidden');
+	});
 });
 
 /**
