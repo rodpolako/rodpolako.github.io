@@ -1816,7 +1816,7 @@ $(() => {
 	});
 
 	$('#settings_modal_close, #btn_settingsClose').on('click', function () {
-		$(document.body).css({'position': 'fixed'});
+		$(document.body).css({'position': 'fixed','left': '0','top':'0','right':'0','bottom':'0'});
 	});
 
 });
