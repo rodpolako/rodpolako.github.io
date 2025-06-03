@@ -1815,7 +1815,7 @@ $(() => {
 		}
 	});
 
-	$(':input').on('focusout', function () {
+	$(':input').on('focusin', function () {
 		alert('focus out');
 	});
 });
