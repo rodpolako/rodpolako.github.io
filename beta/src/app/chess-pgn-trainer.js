@@ -1815,9 +1815,13 @@ $(() => {
 		}
 	});
 
-	$(':input').on('focusin', function () {
+	$('.debounce').on('focusin', function () {
 		console.log('focus in');
 	});
+	$('.debounce').on('focusout', function () {
+		console.log('focus out');
+	});
+	
 });
 
 /**
