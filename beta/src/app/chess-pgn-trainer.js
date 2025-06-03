@@ -1822,9 +1822,10 @@ $(() => {
 	// Fix for iOS PWA to prevent bounce effect after interacting with inputs on settings modal
 	$('#settings_modal_close, #btn_settingsClose').on('click', function () {
 		$(document.body).css({
-			position: 'static',
+			position: 'fixed',
 			left: '0',
 			top: '0',
+			height: '100vh',
 			'overscroll-behavior-y': 'none',
 			overflow: 'hidden',
 		});
