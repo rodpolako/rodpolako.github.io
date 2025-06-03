@@ -40,7 +40,8 @@ a.disabled {
 	opacity:50%;
 }
 
-/* iOS PWA scroll Fix */
+/* iOS PWA scroll Fix 
 html.plt-ios.plt-pwa {
   height: 99.9vh !important;
 }
+  */

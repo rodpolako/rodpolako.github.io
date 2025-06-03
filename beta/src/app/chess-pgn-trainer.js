@@ -1815,14 +1815,14 @@ $(() => {
 		}
 	});
 
-	$('settings_modal_close').on('click', function () {
+	$('#settings_modal_close').on('click', function () {
 		$(document.body).css({'overflow': 'hidden', 'overscroll-behavior-y': 'contain','overflow': 'hidden','-webkit-overflow-scrolling':'touch'});
 		
 		
 		
 	});
 
-	$('btn_settingsClose').on('click', function () {
+	$('#btn_settingsClose').on('click', function () {
 		$(document.body).css({'overflow': 'hidden', 'overscroll-behavior-y': 'contain','overflow': 'hidden','-webkit-overflow-scrolling':'touch'});
 		
 	});
