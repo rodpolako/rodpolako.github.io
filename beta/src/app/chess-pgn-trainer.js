@@ -1822,7 +1822,7 @@ $(() => {
 		console.log('focus out');
 	});
 	$('.debounce').on('focus', function () {
-		$('body').css({'overscroll-behavior-y':'none','overflow': 'hidden', 'touch-action': 'none'});
+		$('body').css({'overscroll-behavior-y':'none','overflow': 'hidden', '-webkit-overflow-scrolling': 'touch'});
 	});
 	
 });
