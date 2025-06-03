@@ -1815,24 +1815,9 @@ $(() => {
 		}
 	});
 
-	$(document).ready(function () {
-		document.ontouchmove = function (e) {
-			e.preventDefault();
-		};
+	$(':input').on('focusout', function () {
+		alert('focus out');
 	});
-
-	$(":input").on('focus', function() {
-		window.scrollTo(0, 0);
-		document.body.scrollTop = 0;
-	});
-	
-	/*
-	$(document).on('touchmove'),
-		function (e) {
-			e.preventDefault();
-		};
-	*/
-	//document.ontouchmove = function(e) {e.preventDefault()};
 });
 
 /**
