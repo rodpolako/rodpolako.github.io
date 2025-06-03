@@ -1815,17 +1815,10 @@ $(() => {
 		}
 	});
 
-	$('#settings_modal_close').on('click', function () {
-		$(document.body).css({'overflow': 'hidden', 'overscroll-behavior-y': 'contain','overflow': 'hidden','-webkit-overflow-scrolling':'touch'});
-		
-		
-		
+	$('#settings_modal_close, #btn_settingsClose').on('click', function () {
+		$(document.body).css({'overflow': 'hidden', 'overscroll-behavior-y': 'none','-webkit-overflow-scrolling':'touch'});
 	});
 
-	$('#btn_settingsClose').on('click', function () {
-		$(document.body).css({'overflow': 'hidden', 'overscroll-behavior-y': 'contain','overflow': 'hidden','-webkit-overflow-scrolling':'touch'});
-		
-	});
 });
 
 /**

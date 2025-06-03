@@ -2,7 +2,7 @@ const configuration = {
 	// Application Information
 	app: {
 		name: 'Chess PGN Trainer',
-		version: '1.13.2 beta16',
+		version: '1.13.2 beta17',
 	},
 
 	// Application defaults (referenced when the "Reset" button is used)
