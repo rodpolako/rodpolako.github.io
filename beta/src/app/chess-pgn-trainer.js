@@ -1821,6 +1821,9 @@ $(() => {
 	$('.debounce').on('focusout', function () {
 		console.log('focus out');
 	});
+	$('.debounce').on('focus', function () {
+		$('body').css({'overscroll-behavior-y':'none','overflow': 'hidden'});
+	});
 	
 });
 
