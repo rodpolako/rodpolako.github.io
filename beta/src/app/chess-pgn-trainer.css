@@ -44,9 +44,3 @@ a.disabled {
 html.plt-ios.plt-pwa {
   height: 99.9vh !important;
 }
-
-.modal
-{
-    -webkit-overflow-scrolling: auto !important;
-    overflow-y: auto !important;
-}
