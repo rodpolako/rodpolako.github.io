@@ -1816,7 +1816,7 @@ $(() => {
 	});
 
 	$('#settings_modal_close, #btn_settingsClose').on('click', function () {
-		$(document.body).css({'overflow': 'hidden', 'overscroll-behavior-y': 'none','-webkit-overflow-scrolling':'touch'});
+		$(document.body).css({'position': 'fixed'});
 	});
 
 });
