@@ -1816,7 +1816,7 @@ $(() => {
 	});
 
 	$(':input').on('focusin', function () {
-		console.log('focus out');
+		console.log('focus in');
 	});
 });
 
