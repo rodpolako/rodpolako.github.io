@@ -1821,10 +1821,11 @@ $(() => {
 		};
 	});
 
-	input.onfocus = function () {
+	$(":input").on('focus', function() {
 		window.scrollTo(0, 0);
 		document.body.scrollTop = 0;
-	};
+	});
+	
 	/*
 	$(document).on('touchmove'),
 		function (e) {
