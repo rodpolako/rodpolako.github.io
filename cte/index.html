@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html data-bs-theme="light">
+
+<head>
+	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.0" charset="UTF-8" />
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
+	<link rel="icon" href="data:,">
+
+	<!-- JQuery (https://jquery.com/) -->
+	<script src="./src/lib/jquery/jquery-3.7.1.min.js"></script>
+
+	<!-- Bootstrap (https://getbootstrap.com/docs/5.3/getting-started/download/) -->
+	<link rel="stylesheet" href="./src/lib/bootstrap/bootstrap-5.3.5.min.css">
+	<script src="./src/lib/bootstrap/bootstrap-5.3.5.bundle.min.js"></script>
+
+	<!-- Core Application -->
+	<link rel="stylesheet" href="./src/app/chess-tactics-extractor.css">
+	<script type="module" src="./src/app/chess-tactics-extractor.js"></script>
+
+</head>
+
+<body>
+
+	<div id="application" class="container-fluid p-0" style="overflow: hidden;">
+		<div id="main_app_container" class="row mx-0">
+
+
+
+			<div class="container-fluid">
+
+				<div class="row pt-1 ps-1 pe-1">
+					<div id="userInfo" class="col">
+						<div class="card">
+							<h1 id="title_topbar" class="card-header">Chess Tactics Extractor</h1>
+
+							<div class="card-body">
+								<p class="card-text">Enter in the Lichess User ID below and this tool will download
+									all
+									the
+									matching Lichess games that
+									have been <b><u>computer analyzed</u></b> in Lichess.</p>
+								<p>Once downloaded, this tool will generate a PGN with puzzles based on moves the
+									Lichess
+									engine
+									has
+									indicated as a problem along with
+									its suggested moves. At this time, it only will work with standard chess games
+									(no
+									variants).</p>
+								<div class="input-group mb-3">
+									<span class="input-group-text" id="basic-addon1">@</span>
+									<input id="txt_userID" type="text" class="form-control"
+										placeholder="Lichess User ID" aria-label="Lichess User ID"
+										aria-describedby="basic-addon1">&nbsp;
+									<button id="btn_submit" type="submit" class="btn btn-primary">Submit</button>
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+
+				<div class="row ps-1 pe-1">
+					<div id="options" class="col-12 col-xxl-7 order-1 pt-1">
+						<div class="card">
+							<h5 class="card-header">Options</h5>
+
+							<div class="container-fluid">
+
+								<div class="row">
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<div class="row justify-content-center">
+													<div class="col-6">
+														<label for="startDate">Games from this date</label>
+														<input id="startDate" class="form-control" type="date" />
+													</div>
+													<div class="col-6">
+														<label for="endDate">Games until this date</label>
+														<input id="endDate" class="form-control" type="date" />
+													</div>
+												</div>
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+
+
+
+								<div class="row">
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Game Types</h5>
+												<p class="card-text">Only games in these time controls</p>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="checkbox" value="UltraBullet"
+														id="checkUltraBullet">
+													<label class="form-check-label" for="checkUltraBullet">
+														UltraBullet
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="checkbox" value="Bullet"
+														id="checkBullet">
+													<label class="form-check-label" for="checkBullet">
+														Bullet
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="checkbox" value="Blitz"
+														id="checkBlitz" checked>
+													<label class="form-check-label" for="checkBlitz">
+														Blitz
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="checkbox" value="Rapid"
+														id="checkRapid" checked>
+													<label class="form-check-label" for="checkRapid">
+														Rapid
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="checkbox" value="Classical"
+														id="checkClassical" checked>
+													<label class="form-check-label" for="checkClassical">
+														Classical
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="checkbox"
+														value="Correspondence" id="checkCorrespondence" checked>
+													<label class="form-check-label" for="checkCorrespondence">
+														Correspondence
+													</label>
+												</div>
+											</div>
+										</div>
+
+									</div>
+
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Sensitivity</h5>
+												<p class="card-text">Choose the level of sensitivity for selecting
+													tactics
+												</p>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_sensitivity"
+														id="rdo_sensitivity1">
+													<label class="form-check-label" for="rdo_sensitivity1">
+														Blunders
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_sensitivity"
+														id="rdo_sensitivity2" checked>
+													<label class="form-check-label" for="rdo_sensitivity2">
+														Blunders & Mistakes
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_sensitivity"
+														id="rdo_sensitivity3">
+													<label class="form-check-label" for="rdo_sensitivity3">
+														Blunders, mistakes & inaccuracies
+													</label>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Rated vs. Casual</h5>
+												<p class="card-text">Only include games against this type</p>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_rated"
+														id="rdo_rated1" checked>
+													<label class="form-check-label" for="rdo_rated1">
+														Both
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_rated"
+														id="rdo_rated2">
+													<label class="form-check-label" for="rdo_rated2">
+														Rated
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_rated"
+														id="rdo_rated3">
+													<label class="form-check-label" for="rdo_rated3">
+														Casual
+													</label>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+
+								</div>
+
+
+								<div class="row">
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Color</h5>
+												<p class="card-text">Only include games against this color</p>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_color"
+														id="rdo_color1" checked>
+													<label class="form-check-label" for="rdo_color1">
+														Both
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_color"
+														id="rdo_color2">
+													<label class="form-check-label" for="rdo_color2">
+														White
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="rdo_color"
+														id="rdo_color3">
+													<label class="form-check-label" for="rdo_color3">
+														Black
+													</label>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Opponent</h5>
+												<p class="card-text">Only include games against this player (leave
+													blank
+													for
+													all)</p>
+												<div class="input-group mb-3">
+													<span class="input-group-text" id="basic-addon1">@</span>
+													<input id="txt_opponent" type="text" class="form-control"
+														placeholder="Opponent User ID" aria-label="Opponent User ID"
+														aria-describedby="basic-addon1">
+												</div>
+												<div class="form-check form-switch">
+													<input class="form-check-input" type="checkbox" role="switch"
+														id="switchBothPlayers">
+													<label class="form-check-label" for="switchBothPlayers">Generate
+														tactics
+														for
+														both players</label>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Max Number of games</h5>
+												<p class="card-text">Maximum number of games to download that meet
+													search
+													criteria</p>
+												<label for="num_games" class="form-label">Number of games:
+												</label><span id="gameValue"></span><span> (higher = slower)</span>
+												<input type="range" class="form-range" value="100" min="25" max="1000"
+													step="25" id="num_games">
+											</div>
+										</div>
+									</div>
+
+
+								</div>
+
+
+
+							</div>
+
+
+						</div>
+
+					</div>
+
+
+					<div class="container-fluid order-2 col-xxl-5 pt-1">
+						<div class="row">
+
+							<div id="console" class="col-12 order-1">
+								<div class="card">
+									<h5 class="card-header">Results</h5>
+									<div class="card-body">
+										<div id="consoleDisplay">
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div id="appinfo" class="col-12 order-2 pt-1">
+								<div class="card">
+									<h5 class="card-header">Application info</h5>
+									<div class="card-body">
+
+										<div id="versionNumber"></div>
+
+										<p>
+											More information on this app can be found on the <a target="_blank"
+												href="https://github.com/rodpolako/tactics_extractor">Github</a> page.
+										</p>
+
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
