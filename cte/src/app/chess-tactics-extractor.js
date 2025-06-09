@@ -21,7 +21,7 @@ let options = {};
 
 // Required modules
 import configuration from './config.js';
-import { getGames } from '../components/lichess/downloadgames.js';
+import { getGames } from '../components/lichess/lichessgames.js';
 import { loadPGNFile } from '../components/pgn-handling/pgn-handling-module.js';
 import { Chess } from '../lib/chess/chess1.20.0-esm-customised.js';
 

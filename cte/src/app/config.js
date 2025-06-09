@@ -2,7 +2,7 @@ const configuration = {
 	// Application Information
 	app: {
 		name: 'Chess Tactics Extractor',
-		version: '0.1.3',
+		version: '0.1.4',
 	},
 
 	// Application defaults

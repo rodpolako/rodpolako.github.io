@@ -15,6 +15,46 @@
 /* exported */
 
 /**
+ * Generic error handling for API calls
+ *
+ * @param {response} response The response from the API after a request
+ * @returns
+ */
+function errorCheck(response) {
+	// This will happen if the study permission for "Share and Export" is set to "Nobody"
+	if (response.status === 403) {
+		console.log('Forbidden: 403');
+		return false;
+	}
+
+	// Wrong PAT supplied - Returns 401 (Unauthorized)
+	if (response.status === 401) {
+		console.log('Unauthorized: 401');
+		return false;
+	}
+
+	// Too many Requests - Returns 429 (Too Many Requests)
+	if (response.status === 429) {
+		console.log('Too Many Requests: 429');
+		return false;
+	}
+
+	// Player not found - Returns 404 (Not found)
+	if (response.status === 404) {
+		console.log('Player not found: 404');
+		return false;
+	}
+
+	// Return any other unknown error
+	if (response.status !== 200) {
+		console.log('Error: ' + response.status);
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * Make a request to the Lichess API
  *
  * @param {object} options The options for this request
@@ -54,33 +94,7 @@ async function fetchLichessData(options) {
 	try {
 		response = await fetch(url + '?' + new URLSearchParams(params).toString(), { headers: headers, cache: 'no-store' });
 
-		// This will happen if the study permission for "Share and Export" is set to "Nobody"
-		if (response.status === 403) {
-			console.log('Forbidden: 403');
-			return false;
-		}
-
-		// Wrong PAT supplied - Returns 401 (Unauthorized)
-		if (response.status === 401) {
-			console.log('Unauthorized: 401');
-			return false;
-		}
-
-		// Too many Requests - Returns 429 (Too Many Requests)
-		if (response.status === 429) {
-			console.log('Too Many Requests: 429');
-			return false;
-		}
-
-		// Player not found - Returns 404 (Not found)
-		if (response.status === 404) {
-			console.log('Player not found: 404');
-			return false;
-		}
-
-		// Return any other unknown error
-		if (response.status !== 200) {
-			console.log('Error: ' + response.status);
+		if (!errorCheck(response)) {
 			return false;
 		}
 
@@ -93,7 +107,7 @@ async function fetchLichessData(options) {
 }
 
 /**
- * Get the games from Lichess API and parse result 
+ * Get the games from Lichess API and parse result
  *
  * @param {object} options The options for this request
  * @returns Array of JSON objects with the individual games
