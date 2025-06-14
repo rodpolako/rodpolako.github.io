@@ -21,9 +21,10 @@ let options = {};
 
 // Required modules
 import configuration from './config.js';
-import { getGames } from '../components/lichess/lichessgames.js';
+import { getLichessGames } from '../components/lichess/lichessgames.js';
 import { loadPGNFile } from '../components/pgn-handling/pgn-handling-module.js';
-import { Chess } from '../lib/chess/chess1.20.0-esm-customised.js';
+import { extractLines } from '../components/extracttactics/extracttactics.js';
+import { parse } from '../lib/pgn-parser/pgn-parser-1.4.18-esm-min.js';
 
 /**
  * Program Initialization. Load config settings and other related tasks
@@ -49,205 +50,22 @@ function initializeApp() {
 	options.since = configuration.defaults.since;
 	options.until = configuration.defaults.until;
 	options.bothplayers = configuration.defaults.bothplayers;
+	options.eco = configuration.defaults.eco;
+	options.minimumDepth = configuration.defaults.minimumDepth;
+	options.maxiumDepth = configuration.defaults.maxiumDepth;
 
 	// Set some UI values and focus
 	$('#gameValue').text(options.maxGames);
+	$('#minPlyValue').text(options.minimumDepth);
+	$('#minPly').val(options.minimumDepth);
+	$('#maxPlyValue').text('No Limit');
+	$('#maxPly').val(options.maxiumDepth);
 	$('#txt_userID').focus();
 }
 
 /**
- * Downloads the games from Lichess
- * 
- * @returns Array of JSON objects representing the results of the API call
- */
-async function downloadLichessGames() {
-	return await getGames(options);
-}
-
-/**
- * 
- * @param {string} PGNFile PGN text file to process
- * @param {object} options Options related to this function
- * @returns PGN file with the individual tactics as separate games
- */
-function extractLines(PGNFile, options) {
-	let errorSensitivity = options.sensitivity;
-	let headers = [
-		'Event',
-		'Site',
-		'Date',
-		'White',
-		'Black',
-		'Result',
-		'GameId',
-		'UTCDate',
-		'UTCTime',
-		'WhiteElo',
-		'BlackElo',
-		'BlackTitle',
-		'Variant',
-		'TimeControl',
-		'ECO',
-		'Opening',
-		'Termination',
-		'Annotator',
-	];
-	let puzzleCollection = [];
-	// NAG[0] '$2' for "Mistake"
-	// NAG[0] '$4' for "Blunder"
-	// NAG[0] '$6' for "Inaccuracy"
-	let errorLevels = ['$2', '$4', '$6'];
-
-	if (errorSensitivity < 1 || errorSensitivity > 3 || !Number.isInteger(errorSensitivity)) {
-		errorSensitivity = 2;
-	}
-
-	if (errorSensitivity === 1) {
-		errorLevels = ['$4'];
-	}
-
-	if (errorSensitivity === 2) {
-		errorLevels = ['$2', '$4'];
-	}
-
-	let jsonGame = loadPGNFile(PGNFile);
-	//console.log(jsonGame);
-
-	jsonGame.forEach((game) => {
-		//console.log(game)
-		console.log(
-			'Processing ' + game.tags.GameId + ': ' + game.tags.White + ' vs. ' + game.tags.Black + ' (' + game.tags.Event + ') - ' + game.tags.UTCDate.value
-		);
-
-		// Load the moves of the PGN into memory
-		let chessgame = new Chess();
-		game.moves.forEach((move) => {
-			// Check to make sure the move to make is not a null move
-			if (move.notation.notation !== 'Z0') {
-				chessgame.move(move.notation.notation);
-			}
-
-			if (move.nag !== null) {
-				// Notation found!
-
-				// Found a mistake, blunder or inaccuracy
-				if (errorLevels.includes(move.nag[0])) {
-					// Exit this whole thing early if both players was not selected and the current player doesn't match
-					if (!options.bothplayers) {
-						// Find out if the user ID is White or black
-						let playerTurn = 'w';
-
-						if (game.tags.Black === options.userID) {
-							playerTurn = 'b';
-						}
-
-						if (playerTurn !== move.turn) {
-							return;
-						}
-					}
-
-					// undo the last move in the game in order to get the current fen
-					chessgame.undo();
-
-					// Create a new Chess Game here and set it up with this fen.
-					let tempChessGame = new Chess(chessgame.fen());
-
-					// Add the headers
-					headers.forEach((header) => {
-						if (game.tags?.header !== '') {
-							if (header === 'Date' || header === 'UTCDate' || header === 'UTCTime') {
-								tempChessGame.setHeader(header, game.tags[header].value);
-								return;
-							}
-
-							if (header === 'TimeControl') {
-								tempChessGame.setHeader(header, game.tags[header][0].value);
-								return;
-							}
-
-							tempChessGame.setHeader(header, game.tags[header]);
-						}
-					});
-
-					let quality = 'Blunder';
-					if (move.nag[0] === '$2') {
-						quality = 'Mistake';
-					}
-					if (move.nag[0] === '$6') {
-						quality = 'Inaccuracy';
-					}
-
-					let playedMove = move.notation.notation;
-					if (move.turn === 'b') {
-						playedMove = '... ' + move.notation.notation;
-					}
-
-					// Add comments indicating the previous bad move and its quality
-					let annotation = createAnnotation(
-						game.tags.White,
-						game.tags.Black,
-						game.tags.UTCDate,
-						game.tags.UTCTime,
-						playedMove,
-						quality,
-						game.tags.Site
-					);
-					tempChessGame.setComment(annotation);
-
-					// Add the variation here
-					move.variations[0].forEach((variationmove) => {
-						tempChessGame.move(variationmove.notation.notation);
-					});
-
-					// Add this pgn to the collection
-					puzzleCollection.push(tempChessGame.pgn());
-
-					// Finally redo the current move
-					chessgame.move(move.notation.notation);
-				}
-			}
-		});
-	});
-
-	return puzzleCollection.join('\n\n');
-}
-
-/**
- * Create a custom annotation in the PGN indicating the situation with this position
- * 
- * @param {*} White Name of the white player
- * @param {*} Black Name of the black player
- * @param {*} UTCDate UTC date of the game
- * @param {*} UTCTime UTC time of the game
- * @param {*} playedMove The original move played in this position
- * @param {*} quality The quality (inaccuracy, mistake, blunder) of the original move
- * @param {*} site The URL to the specific game
- * @returns An HTML-formatted string ready to insert into the PGN as an annotation
- */
-function createAnnotation(White, Black, UTCDate, UTCTime, playedMove, quality, site) {
-	let annotation = '';
-
-	let qualityComment = 'a <span style="font-weight: bold;color: #df5353;">Blunder</span>';
-	if (quality === 'Mistake') {
-		qualityComment = 'a <span style="font-weight: bold;color: #dc9601;">Mistake</span>';
-	}
-	if (quality === 'Inaccuracy') {
-		qualityComment = 'an <span style="font-weight: bold;color: #53b2ea;">Inaccuracy</span>';
-	}
-
-	let playedMoveComment = '<span style="font-weight: bold;color: #0d6efd">' + playedMove + '</span>';
-
-	annotation = White + ' vs. ' + Black + '\n\n';
-
-	annotation = annotation + 'In a <a target="_blank" href="' + site + '">Lichess</a> game played on ' + UTCDate.value + ' @ ' + UTCTime.value + ', ';
-	annotation = annotation + 'you played ' + playedMoveComment + ', which is ' + qualityComment + '.';
-
-	return annotation;
-}
-
-/**
  * Simple method to automatically start a download of a text file
- * 
+ *
  * @param {*} filename Filename to assign to the file
  * @param {*} text Contents of the file
  */
@@ -266,32 +84,86 @@ function download(filename, text) {
 	document.body.removeChild(element);
 }
 
-/**
- * Main process. Download the games, extract the tactics, generate & download the file.
- */
-async function processGames() {
-	// Clear the console
-	console.clear();
-
-	// Calculate estimated time to download set based on published 20 games/sec rate
-	let estimate = Math.round(parseInt(options.maxGames) / 20);
-	let units = 'seconds';
-	if (estimate === 1) {
-		units = 'second';
+function validateECO(ecoString) {
+	// Exit if string is blank
+	if (!ecoString) {
+		return false;
 	}
 
-	console.log('Downloading games - please wait (estimated time: ' + estimate + ' ' + units + ')');
-	addSpinner();
+	// Confirm input is a string
+	if (typeof ecoString !== 'string') {
+		return false;
+	}
 
-	let games = await downloadLichessGames();
+	// Confirm length is 3
+	if (ecoString.length != 3) {
+		return false;
+	}
 
-	let tactics = [];
-	games.forEach((game) => {
+	// Confirm first char is a letter between A-E
+	if (!['A', 'B', 'C', 'D', 'E'].includes(ecoString.substring(0, 1).toUpperCase())) {
+		return false;
+	}
+
+	// Confirm second and third char is a number between 0 and 9
+	if (
+		!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(ecoString.slice(-2, -1)) ||
+		!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(ecoString.slice(-1))
+	) {
+		return false;
+	}
+}
+
+function splitPGN(filedata) {
+	let splitgames = [];
+	filedata = filedata.trim();
+	splitgames = filedata.split('\n\n\n');
+
+	return splitgames;
+}
+
+async function applyFiltersLocally(pgnJSON) {
+	let filteredArray = [];
+	pgnJSON.forEach((game) => {
 		// Exit this game early if this is not a standard game (maybe look to add fromPosition or other variants later...)
-		if (game.variant !== 'standard') {
+		if (game.tags.Variant !== 'Standard') {
 			return;
 		}
 
+		// Don't process any games that don't match a provided ECO
+		if (options.eco !== '' && validateECO) {
+			if (game.tags.ECO !== options.eco) {
+				return;
+			}
+		}
+
+		// Exclude games of the non-selected color (if selected)  Emulates API filter
+		if (options.color !== '') {
+			if (options.color === 'white' && game.tags.White.toLowerCase() !== options.userID.toLowerCase()) {
+				return;
+			}
+
+			if (options.color === 'black' && game.tags.Black.toLowerCase() !== options.userID.toLowerCase()) {
+				return;
+			}
+		}
+
+		// Exclude games where the opponent is not included (if selected)  Emulates API filter
+		if (options.opponent !== '') {
+			if (game.tags.White.toLowerCase() !== options.opponent.toLowerCase() && game.tags.Black.toLowerCase() !== options.opponent.toLowerCase()) {
+				return;
+			}
+		}
+
+		filteredArray.push(game);
+	});
+
+	return filteredArray;
+}
+
+async function extractTactics(games) {
+	let tactics = [];
+	games.forEach((game) => {
 		let tacticsLine = extractLines(game.pgn, options);
 		// Only add to the list if there are tactics found
 		if (tacticsLine.length > 0) {
@@ -299,9 +171,43 @@ async function processGames() {
 		}
 	});
 
+	return tactics;
+}
+
+async function convertPGNToJSON(pgnArray) {
+	let NDJSON = [];
+	pgnArray.forEach((game) => {
+		let gamedata = {};
+		gamedata = parse(game, { startRule: 'game' });
+		gamedata.pgn = game;
+		NDJSON.push(gamedata);
+	});
+	return NDJSON;
+}
+
+async function loadLocalPGNFile() {
+	// Get data - read the file
+	let myObject = await fetch('test.pgn' + '?v=' + Date.now());
+	let PGNData = await myObject.text();
+
+	// Convert the PGN into array of PGN games. Assumes two blank lines between games in source PGN.
+	let games = splitPGN(PGNData);
+
+	// Create JSON object of the PGN with the PGN itself as an key/value pair
+	games = await convertPGNToJSON(games);
+
+	// Apply relevant filters for local PGN files (instead of lichess)
+	games = await applyFiltersLocally(games);
+
+	return games;
+}
+
+async function displayResults(tactics) {
+	//console.log(tactics);
+
 	let finalpuzzle = loadPGNFile(tactics.join('\n\n'));
 
-	console.log('\nGames with tactics found: ' + tactics.length + ' out of ' + options.maxGames);
+	console.log('\nGames with tactics found: ' + tactics.length);
 	console.log('Tactics puzzles generated: ' + finalpuzzle.length + '\n');
 
 	if (finalpuzzle.length > 0) {
@@ -313,16 +219,77 @@ async function processGames() {
 	removeSpinner();
 }
 
+async function applyFiltersToDownloadedData(pgnJSON) {
+	let filteredArray = [];
+	pgnJSON.forEach((game) => {
+		// Exit this game early if this is not a standard game (maybe look to add fromPosition or other variants later...)
+		if (game.variant !== 'standard') {
+			return;
+		}
+
+		// Don't process any games that don't match a provided ECO
+		if (options.eco !== '' && validateECO) {
+			if (game.opening.eco !== options.eco) {
+				return;
+			}
+		}
+		filteredArray.push(game);
+	});
+
+	return filteredArray;
+}
+
+async function downloadLicessData() {
+	// Calculate estimated time to download set based on published 20 games/sec rate
+	let estimate = Math.round(parseInt(options.maxGames) / 20);
+	let units = 'seconds';
+	if (estimate === 1) {
+		units = 'second';
+	}
+	console.log('Downloading games - please wait (estimated time: ' + estimate + ' ' + units + ')');
+
+	// Get data
+	let games = await getLichessGames(options);
+	if (games === false) {
+		return;
+	}
+
+	// Apply lichess-specific filters not available in the API (like ECO or variant)
+	games = await applyFiltersToDownloadedData(games);
+
+	// Return filtered list for tactic extraction
+	return games;
+}
+
+/**
+ * Main process. Download the games, extract the tactics, generate & download the file.
+ */
+async function processGames() {
+	// Clear the console
+	console.clear();
+	addSpinner();
+
+	// Get data
+	//let games = await loadLocalPGNFile();
+	let games = await downloadLicessData();
+
+	// Find tactics
+	let tactics = await extractTactics(games);
+
+	// Display results and download file
+	await displayResults(tactics);
+}
+
 /**
  * Covert a date in YYYYMMDD format to epoch in UTC format
- * 
+ *
  * @param {*} dateString The text component of the date
  * @param {*} timeComponent The time component of the date
  * @returns Epoch time for the provided input
  */
 function convertDateToEpoch(dateString, timeComponent) {
 	const event = new Date(dateString + ' ' + timeComponent);
-	
+
 	var myDate = new Date(event.toUTCString());
 	var myEpoch = myDate.getTime();
 	return myEpoch;
@@ -390,6 +357,7 @@ function setOptionsBasedOnCheckboxSettings() {
 function setOptionsBasedOnTextInputs() {
 	options.userID = $('#txt_userID').val();
 	options.opponent = $('#txt_opponent').val();
+	options.eco = $('#txt_eco').val();
 }
 
 /**
@@ -408,6 +376,15 @@ function setOptionsBasedOnSwitches() {
 function setOptionsBasedOnSliderSettings() {
 	options.maxGames = $('#num_games').val();
 	$('#gameValue').text(options.maxGames);
+
+	options.minimumDepth = parseInt($('#minPly').val());
+	$('#minPlyValue').text(options.minimumDepth);
+
+	options.maxiumDepth = parseInt($('#maxPly').val());
+	$('#maxPlyValue').text(options.maxiumDepth);
+	if (options.maxiumDepth === 49) {
+		$('#maxPlyValue').text('No limit');
+	}
 }
 
 /**
@@ -430,9 +407,9 @@ function removeSpinner() {
 
 /**
  * Create an on-screen "console" so that output can be displayed there
- * 
+ *
  * @param {*} container The name of the element that will house the console div
- * @returns 
+ * @returns
  */
 function initializeConsoleDisplay(container) {
 	if (container === '') {

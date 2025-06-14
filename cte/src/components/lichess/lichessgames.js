@@ -76,7 +76,7 @@ async function fetchLichessData(options) {
 		moves: 'true', // Include the PGN moves.
 		literate: 'true', // Insert textual annotations in the PGN about the opening, analysis variations, mistakes, and game termination. Example: 5... g4? { (-0.98 → 0.60) Mistake. Best move was h6. } (5... h6 6. d4 Ne7 7. g3 d5 8. exd5 fxg3 9. hxg3 c6 10. dxc6)
 		pgnInJson: 'true', // Include the full PGN within the JSON response, in a pgn field. The response type must be set to application/x-ndjson by the request Accept header.
-		opening: 'false', // Include the opening name. Example: [Opening "King's Gambit Accepted, King's Knight Gambit"]
+		opening: 'true', // Include the opening name. Example: [Opening "King's Gambit Accepted, King's Knight Gambit"]
 		clocks: 'false', // Include clock status when available. Either as PGN comments: 2. exd5 { [%clk 1:01:27] } e5 { [%clk 1:01:28] } Or in a clocks JSON field, as centisecond integers, depending on the response type.
 		accuracy: 'false', // Include accuracy percent of each player, when available. Only available in JSON.
 		division: 'false', // Plies which mark the beginning of the middlegame and endgame. Only available in JSON
@@ -112,7 +112,7 @@ async function fetchLichessData(options) {
  * @param {object} options The options for this request
  * @returns Array of JSON objects with the individual games
  */
-async function getGames(userDetails, options) {
+async function getLichessGames(userDetails, options) {
 	var ndjson = await fetchLichessData(userDetails, options);
 
 	if (ndjson === false) {
@@ -127,4 +127,4 @@ async function getGames(userDetails, options) {
 	return jsondata;
 }
 
-export { getGames };
+export { getLichessGames };

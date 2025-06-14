@@ -2,7 +2,7 @@ const configuration = {
 	// Application Information
 	app: {
 		name: 'Chess Tactics Extractor',
-		version: '0.1.4',
+		version: '0.1.5',
 	},
 
 	// Application defaults
@@ -16,6 +16,9 @@ const configuration = {
 		since: '',
 		until: '',
 		bothplayers: false,
+		eco: '',
+		minimumDepth: 1,
+		maxiumDepth: 49
 	},
 
 	// Item Collections
@@ -24,10 +27,10 @@ const configuration = {
 		checkboxlist: ['#checkUltraBullet', '#checkBullet', '#checkBlitz', '#checkRapid', '#checkClassical', '#checkCorrespondence'],
 
 		// Collection of text inputs used in the app
-		textInputList: ['#txt_userID', '#txt_opponent'],
+		textInputList: ['#txt_userID', '#txt_opponent', '#txt_eco'],
 
 		// Collection of sliders used in the app
-		sliderList: ['#num_games'],
+		sliderList: ['#num_games', '#minPly', 'maxPly'],
 
 		// Collection of switches used in the app
 		switchList: ['#switchBothPlayers'],

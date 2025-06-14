@@ -285,7 +285,7 @@
 												<p class="card-text">Maximum number of games to download that meet
 													search
 													criteria</p>
-												<label for="num_games" class="form-label">Number of games:
+												<label for="num_games" class="form-label">Number of games: 
 												</label><span id="gameValue"></span><span> (higher = slower)</span>
 												<input type="range" class="form-range" value="100" min="25" max="1000"
 													step="25" id="num_games">
@@ -295,6 +295,71 @@
 
 
 								</div>
+
+
+
+
+								<div class="row">
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Opening</h5>
+												<p class="card-text">Only include games of this opening by ECO</p>
+												<div class="input-group mb-3">
+													<input id="txt_eco" type="text" class="form-control" maxlength="3"
+														placeholder="Opening ECO (ex: C55)" aria-label="Opening ECO"
+														aria-describedby="basic-addon1">
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Minimum variation depth</h5>
+												<p class="card-text">Variation must have this minimum number of moves
+												</p>
+												<label for="minPly" class="form-label">Minimum ply: 
+												</label><span id="minPlyValue"></span>
+												<input type="range" class="form-range" min="1" max="21" step="2"
+													id="minPly">
+											</div>
+										</div>
+									</div>
+
+
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Max variation depth</h5>
+												<p class="card-text">Cut off variation to a maximum number of moves</p>
+												<label for="maxPly" class="form-label">Maximum ply: 
+												</label><span id="maxPlyValue"></span>
+												<input type="range" class="form-range" min="1" max="49" step="2"
+													id="maxPly">
+											</div>
+										</div>
+									</div>
+
+
+								</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -328,7 +393,8 @@
 
 										<p>
 											More information on this app can be found on the <a target="_blank"
-												href="https://github.com/rodpolako/Chess-Tactics-Extractor">Github</a> page.
+												href="https://github.com/rodpolako/Chess-Tactics-Extractor">Github</a>
+											page.
 										</p>
 
 									</div>
