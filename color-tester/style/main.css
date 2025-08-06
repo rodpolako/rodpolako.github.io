@@ -1,0 +1,55 @@
+body {
+	font-family: Arial;
+	margin-bottom: 20px;
+	width: 100%;
+	margin: 0px auto;
+	background-color: white;
+}
+
+div.appbody {
+	margin: auto;
+	text-align: center;
+}
+
+input {
+	width: 200px;
+	height: 100px;
+	font-size: 200%;
+}
+
+p.q {
+	font-size: 100%;
+	padding: 0px;
+	margin: 5px;
+	font-weight: bold;
+}
+
+p.p {
+	font-size: 80%;
+	padding: 0px;
+	margin: 2px;
+}
+
+.square {
+	height: 100px;
+	width: 100px;
+	border: 1px solid black;
+}
+
+.lsquare {
+	background-color: #dee3e6;
+}
+
+.dsquare {
+	background-color: #8ca2ad;
+}
+
+.gamefail {
+	color: red;
+	font-weight: bold;
+}
+
+.gamesuccess {
+	color: green;
+	font-weight: bold;
+}
