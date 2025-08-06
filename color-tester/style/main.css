@@ -1,27 +1,8 @@
-body {
-	font-family: Arial;
-	width: 100%;
-	margin: auto;
-	background-color: white;
-}
-
 div.appbody {
 	margin: auto;
 	text-align: center;
 }
 
-input {
-	width: 200px;
-	height: 100px;
-	font-size: 200%;
-}
-
-p.q {
-	font-size: 100%;
-	padding: 0px;
-	margin: 5px;
-	font-weight: bold;
-}
 
 .square {
 	height: 200px;
@@ -35,14 +16,4 @@ p.q {
 
 .dsquare {
 	background-color: #8ca2ad;
-}
-
-.gamefail {
-	color: red;
-	font-weight: bold;
-}
-
-.gamesuccess {
-	color: green;
-	font-weight: bold;
 }

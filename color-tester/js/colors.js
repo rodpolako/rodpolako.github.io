@@ -88,6 +88,7 @@ function winner() {
 	document.getElementById('fc').value = gc(time);
 }
 
+// condition ? expressionIfTrue : expressionIfFalse;
 function setfinaltime(text) {
 	nn6 ? (document.getElementById('finaltime').innerHTML = text) : (document.all.finaltime.innerHTML = text);
 }

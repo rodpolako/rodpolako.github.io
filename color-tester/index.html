@@ -5,46 +5,72 @@
 	<title>Chess Colors Speed Quiz</title>
 	<link rel="stylesheet" href="style/main.css" type="text/css">
 	<script type="text/javascript" src="js/colors.js"></script>
+
+	<!-- JQuery (https://jquery.com/) -->
+	<script src="./lib/jquery/jquery-3.7.1.min.js"></script>
+
+	<!-- Bootstrap (https://getbootstrap.com/docs/5.3/getting-started/download/) -->
+	<link rel="stylesheet" href="./lib/bootstrap/bootstrap-5.3.5.min.css">
+	<script src="./lib/bootstrap/bootstrap-5.3.5.bundle.min.js"></script>
+
 </head>
+
+<!--
+TODO:
+ - Move to bootstrap
+ - Add option to choose square colors
+ - Add option to choose number of questions
+ - Clean up JS
+-->
 
 <body>
 
-	<div class=appbody>
+	<div id="application" class="container-fluid p-0" style="overflow: hidden;">
+		<div id="main_app_container" class="row mx-0">
 
-		<h1>Chess Colors Speed Quiz</h1>
+			<div class="container-fluid">
 
-		<div id=startbutton>
 
-			<input type=button value="Start" onclick="start_game()">
+				<div class=appbody>
 
-			<h2>How to play</h2>
-			<p class=q>Press the start button</p>
-			<p class=q>Click either the light or dark box that matches the square coordinate</p>
-			<br>
-			<p class=q>Miss one and you have to start over again</p>
-			<p class=q>Get 25 in a row to win</p>
+					<div class="p-1 h1 fs-2">Chess Colors Speed Quiz</div>
+
+					<div id=startbutton>
+
+						<input type=button value="Start" class="btn btn-primary" onclick="start_game()">
+
+						<div class="p-1 h2 fs-2">How to play</div>
+						<div>Press the start button</div>
+						<div>Click either the light or dark box that matches the square coordinate</div>
+						<br>
+						<div>Miss one and you have to start over again</div>
+						<div>Get 25 in a row to win</div>
+
+					</div>
+
+					<div id=gameover style="display:none;">
+						<div class="p-1 h3 fs-2 text-danger">Game Over!</div>
+						<input type=button value="Try Again?" class="btn btn-primary" onclick="start_game()">
+					</div>
+
+					<div id=gamesuccess style="display:none;">
+						<div class="p-1 h3 fs-2 text-success">Well Done!</div>
+						<h4 id="finaltime"></h4>
+						<input type=button value="Try Again?" class="btn btn-primary" onclick="start_game()">
+					</div>
+
+					<div id=squarecolor style="display:none;">
+						<div class="p-1 h2 fs-2" id=squareid>Square:</div>
+						<input type="button" onclick="click_light();" class="square lsquare" value="light"> &nbsp;
+						<input type="button" onclick="click_dark();" class="square dsquare" value="dark">
+						<p id="status" style="font-size:200%">0/25</p>
+						<p id="statustimer" style="font-size:200%"></p>
+					</div>
+
+				</div>
+			</div>
 
 		</div>
-
-		<div id=gameover style="display:none;">
-			<h3 class="gamefail">Game Over!</h3>
-			<input type=submit value="Try Again?" onclick="start_game()">
-		</div>
-
-		<div id=gamesuccess style="display:none;">
-			<h3 class="gamesuccess">Well Done!</h3>
-			<h4 id="finaltime"></h4>
-			<input type=button value="Try Again?" onclick="start_game()">
-		</div>
-
-		<div id=squarecolor style="display:none;">
-			<h2 id=squareid>Square:</h2>
-			<input type="button" onclick="click_light();" class="square lsquare" value="light"> &nbsp;
-			<input type="button" onclick="click_dark();" class="square dsquare" value="dark">
-			<p id="status" style="font-size:200%">0/25</p>
-			<p id="statustimer" style="font-size:200%"></p>
-		</div>
-
 	</div>
 
 </body>
