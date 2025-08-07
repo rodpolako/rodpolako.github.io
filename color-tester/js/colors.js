@@ -14,6 +14,8 @@ var num_questions = 20;
 import configuration from '../app/config.js';
 import * as dataTools from '../util/datatools-module.js';
 
+// TODO: Clean up the JS
+
 function game_over_reset() {
 	document.getElementById('gameover').style.display = 'block';
 	document.getElementById('squarecolor').style.display = 'none';
@@ -123,7 +125,7 @@ function saveSettings() {
 	dataTools.saveItem('numQuestions', options.numQuestions);
 	dataTools.saveItem('light', options.lightColor);
 	dataTools.saveItem('dark', options.darkColor);
-	console.log('saved', options)
+	//console.log('saved', options)
 }
 
 /**
@@ -132,8 +134,8 @@ function saveSettings() {
 function loadSettings() {
 	// Set number of questions
 	options.numQuestions = parseInt(dataTools.readItem('numQuestions'));
-	$('#gameValue').text(options.numQuestions);
 	num_questions = options.numQuestions;
+	$('#gameValue').text(options.numQuestions);
 	$('#numQuestions').val(num_questions);
 
 	// Set color options
@@ -145,7 +147,7 @@ function loadSettings() {
 	$('#btn_dark').css('background-color', options.darkColor);
 	$('#txt_darkSquare').val(options.darkColor);
 
-	console.log('loaded', options)
+	//console.log('loaded', options)
 }
 
 /**
@@ -166,7 +168,6 @@ function initializeApp() {
 	options.darkColor = configuration.defaults.darkColor;
 
 	// Save defaults to local storage if not already present
-
 	if (dataTools.readItem('numQuestions') === null) {
 		dataTools.saveItem('numQuestions', options.numQuestions);
 	}
@@ -179,11 +180,8 @@ function initializeApp() {
 		dataTools.saveItem('dark', options.darkColor);
 	}
 
-	console.log(options);
-
-	// Set some UI values and focus
+	// Set the UI values and focus
 	loadSettings();
-
 	$('#btn_start').focus();
 }
 
