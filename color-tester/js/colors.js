@@ -2,13 +2,13 @@
 // Define global variables
 // -----------------------
 let options = {};
-
-var time = 0;
-var start_time = 0;
+var startingTime = 0;
 var game_over = false;
-var light = 0;
-var num_right = 0;
-var num_questions = 20;
+var light_square = false;
+var numberCorrect = 0;
+var numberQuestions = 20;
+var rowLimit = 8;
+var columnLimit = 8;
 
 // Required modules
 import configuration from '../app/config.js';
@@ -16,97 +16,96 @@ import * as dataTools from '../util/datatools-module.js';
 
 // TODO: Clean up the JS
 
-function game_over_reset() {
-	document.getElementById('gameover').style.display = 'block';
-	document.getElementById('squarecolor').style.display = 'none';
-	setstatus('0/' + num_questions.toString());
+function manageElements(elementArray, attribute, value) {
+	elementArray.forEach((element) => {
+		$(element).css(attribute, value);
+	});
+}
+
+// Game-related functions
+function gameOver() {
 	game_over = true;
-}
+	manageElements(['#gameover', '#startbutton'], 'display', 'block');
+	manageElements(['#squarecolor'], 'display', 'none');
 
-function start_game() {
-	document.getElementById('gameover').style.display = 'none';
-	document.getElementById('gamesuccess').style.display = 'none';
-	document.getElementById('startbutton').style.display = 'none';
-	document.getElementById('squarecolor').style.display = 'block';
-	game_over = false;
-	num_right = 0;
-	setTimeout(inc_time, 100);
-	setstatus('0/' + num_questions.toString());
-
-	gen_square();
-
-	let st = new Date();
-	start_time = st.getTime();
-}
-
-function inc_time() {
-	let st = new Date();
-	time = st.getTime() - start_time;
-
-	time /= 1000;
-	time = time.toFixed(1);
-
-	settimer('Time: ' + time);
-
-	if (!game_over) setTimeout(inc_time, 100);
-}
-
-function gen_square() {
-	var col = Math.floor(Math.random() * 8);
-	var row = Math.floor(Math.random() * 8) + 1;
-
-	var spot = (row - 1) * 8 + col;
-
-	if ((row - 1) % 2 == 0) light = spot % 2;
-	else light = 1 - (spot % 2);
-
-	col = String.fromCharCode(col + 97);
-
-	setsquare(col + row);
-}
-
-function click_light() {
-	if (light == 1) next_square();
-	else game_over_reset();
-}
-
-function click_dark() {
-	if (light == 0) next_square();
-	else game_over_reset();
-}
-
-function next_square() {
-	num_right++;
-	if (num_right == num_questions) {
-		winner();
-		return;
-	}
-	setstatus(num_right + '/' + num_questions.toString());
-	gen_square();
+	updateProgressBar(numberCorrect, numberQuestions);
 }
 
 function winner() {
-	game_over = 1;
-	document.getElementById('squarecolor').style.display = 'none';
-	document.getElementById('gamesuccess').style.display = 'block';
+	game_over = true;
+	manageElements(['#startbutton', '#gamesuccess'], 'display', 'block');
+	manageElements(['#squarecolor'], 'display', 'none');
+	updateProgressBar(numberCorrect, numberQuestions);
+
 	let st = new Date();
-	let time = st.getTime() - start_time;
+	let time = st.getTime() - startingTime;
 	time = Math.round(time / 10) / 100;
 	setfinaltime('Final Time: ' + time);
-	document.getElementById('ft').value = time;
-	document.getElementById('fc').value = gc(time);
+}
+
+function startGame() {
+	game_over = false;
+	manageElements(['#squarecolor', '#statusDetails'], 'display', 'block');
+	manageElements(['#gameover', '#gamesuccess', '#startbutton'], 'display', 'none');
+
+	numberCorrect = 0;
+	updateProgressBar(numberCorrect, numberQuestions);
+
+	generateTestSquare();
+
+	startingTime = new Date().getTime();
+}
+
+/**
+ * Updates the progress bar on the screen
+ *
+ * @param {int} partial_value  The number of completed puzzles (numerator)
+ * @param {int} total_value    The total number of puzzles (denominator)
+ */
+function updateProgressBar(partial_value, total_value) {
+	// Do the math
+	const progress = Math.round((partial_value / total_value) * 100);
+
+	// Show the result
+	let progresspercent = progress + '%';
+	$('#progressbar').width(progresspercent);
+	$('#progressbar').text(progresspercent);
+}
+
+function randomInteger(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateTestSquare() {
+	// Generate a random row and column (within limits)
+	var row = randomInteger(1, rowLimit);
+	var col = randomInteger(1, columnLimit);
+
+	// If both row & column are even or if both are odd then the square is dark, otherwise it is light
+	light_square = true;
+	if ((row % 2 === 0 && col % 2 === 0) || (row % 2 !== 0 && col % 2 !== 0)) {
+		light_square = false;
+	}
+
+	// Show the value on the screen
+	let chosenSquare = String.fromCharCode(col + 96) + row;
+	setsquare(chosenSquare);
+}
+
+
+function nextQuestion() {
+	numberCorrect += 1;
+	if (numberCorrect === numberQuestions) {
+		winner();
+		return;
+	}
+
+	updateProgressBar(numberCorrect, numberQuestions);
+	generateTestSquare();
 }
 
 function setfinaltime(text) {
 	$('#finaltime').html(text);
-}
-
-function settimer(text) {
-	$('#statustimer').html(text);
-}
-
-function setstatus(text) {
-	$('#status').html(text);
 }
 
 function setsquare(text) {
@@ -114,9 +113,19 @@ function setsquare(text) {
 	$('#squareid').html(text);
 }
 
-function gc(t) {
-	return calc(t);
+
+
+
+
+
+function checkSquare(light) {
+	if (light === light_square || !light === !light_square) {
+		nextQuestion();
+		return;
+	}
+	gameOver();
 }
+
 
 /**
  * Saves the current settings to local storage
@@ -134,9 +143,9 @@ function saveSettings() {
 function loadSettings() {
 	// Set number of questions
 	options.numQuestions = parseInt(dataTools.readItem('numQuestions'));
-	num_questions = options.numQuestions;
+	numberQuestions = options.numQuestions;
 	$('#gameValue').text(options.numQuestions);
-	$('#numQuestions').val(num_questions);
+	$('#numQuestions').val(numberQuestions);
 
 	// Set color options
 	options.lightColor = dataTools.readItem('light');
@@ -202,7 +211,7 @@ function setOptionsBasedOnTextInputs() {
 function setOptionsBasedOnSliderSettings() {
 	options.numQuestions = $('#numQuestions').val();
 	$('#gameValue').text(options.numQuestions);
-	num_questions = options.numQuestions;
+	numberQuestions = options.numQuestions;
 }
 
 function resetSettings() {
@@ -222,19 +231,15 @@ function resetSettings() {
 function initializeControls() {
 	// Assign action to buttons
 	$('#btn_start').on('click', function () {
-		start_game();
-	});
-
-	$('#btn_restart').on('click', function () {
-		start_game();
+		startGame();
 	});
 
 	$('#btn_light').on('click', function () {
-		click_light();
+		checkSquare(true)
 	});
 
 	$('#btn_dark').on('click', function () {
-		click_dark();
+		checkSquare(false)
 	});
 
 	$('#btn_reset').on('click', function () {
@@ -266,7 +271,6 @@ function initializeControls() {
 			});
 		});
 	});
-
 }
 
 /**
