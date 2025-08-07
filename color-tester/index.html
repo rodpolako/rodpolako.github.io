@@ -30,44 +30,113 @@ TODO:
 
 			<div class="container-fluid">
 
+				<div class="row pt-1 ps-1 pe-1">
+					<div id="userInfo" class="col">
 
-				<div class=appbody>
 
-					<div class="p-1 h1 fs-2">Chess Colors Speed Quiz</div>
+						<div class="card text-center">
+							<h1 id="title_topbar" class="card-header">Chess Colors Quiz</h1>
 
-					<div id=startbutton>
+							<div class="card-body col-12">
 
-						<input type=button value="Start" class="btn btn-primary" onclick="start_game()">
+								<div id=startbutton>
+									<input type=button value="Start" class="btn btn-primary" onclick="start_game()">
+								</div>
 
-						<div class="p-1 h2 fs-2">How to play</div>
-						<div>Press the start button</div>
-						<div>Click either the light or dark box that matches the square coordinate</div>
-						<br>
-						<div>Miss one and you have to start over again</div>
-						<div>Get 25 in a row to win</div>
+								<div id=gameover style="display:none;">
+									<div class="p-1 h3 fs-2 text-danger">Game Over!</div>
+									<input type=button value="Try Again?" class="btn btn-primary"
+										onclick="start_game()">
+								</div>
 
-					</div>
+								<div id=gamesuccess style="display:none;">
+									<div class="p-1 h3 fs-2 text-success">Well Done!</div>
+									<h4 id="finaltime"></h4>
+									<input type=button value="Try Again?" class="btn btn-primary"
+										onclick="start_game()">
+								</div>
 
-					<div id=gameover style="display:none;">
-						<div class="p-1 h3 fs-2 text-danger">Game Over!</div>
-						<input type=button value="Try Again?" class="btn btn-primary" onclick="start_game()">
-					</div>
+								<div id=squarecolor style="display:none;">
+									<div class="p-1 h2 fs-2" id=squareid>Square:</div>
+									<input type="button" onclick="click_light();" class="square lsquare" value="light">
+									&nbsp;
+									<input type="button" onclick="click_dark();" class="square dsquare" value="dark">
+									<br><br>
+									<p id="status" style="font-size:200%">0/25</p>
+									<p id="statustimer" style="font-size:200%"></p>
+								</div>
 
-					<div id=gamesuccess style="display:none;">
-						<div class="p-1 h3 fs-2 text-success">Well Done!</div>
-						<h4 id="finaltime"></h4>
-						<input type=button value="Try Again?" class="btn btn-primary" onclick="start_game()">
-					</div>
+							</div>
+						</div>
 
-					<div id=squarecolor style="display:none;">
-						<div class="p-1 h2 fs-2" id=squareid>Square:</div>
-						<input type="button" onclick="click_light();" class="square lsquare" value="light"> &nbsp;
-						<input type="button" onclick="click_dark();" class="square dsquare" value="dark">
-						<p id="status" style="font-size:200%">0/25</p>
-						<p id="statustimer" style="font-size:200%"></p>
+						<div class="card">
+
+							<div class="card-body">
+								<h5 class="card-title">How to play</h5>
+								<p class="card-text">Press the start button</p>
+								<p class="card-text">Click either the light or dark box that matches the square
+									coordinate. Miss one and you have to start over again</p>
+								<p class="card-text">Get 25 in a row to win</p>
+							</div>
+
+						</div>
+
 					</div>
 
 				</div>
+
+				<div class="row ps-1 pe-1">
+					<div id="options" class="col-12 col-xxl-7 order-1 pt-1">
+						<div class="card">
+							<h5 class="card-header">Options</h5>
+
+							<div class="container-fluid">
+
+								<div class="row">
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<div class="row justify-content-center">
+													<div class="col-6">
+														<label for="endDate">Light Square Color</label>
+														<input id="txt_eco" type="text" class="form-control" maxlength="7"
+														placeholder="Light Square Color in Hex (ex: #aabbcc)" aria-label="Opening ECO"
+														aria-describedby="basic-addon1">
+													</div>
+													<div class="col-6">
+														<label for="endDate">Dark Square Color</label>
+														<input id="txt_eco" type="text" class="form-control" maxlength="7"
+														placeholder="Dark Square Color in Hex (ex: #aabbcc)" aria-label="Opening ECO"
+														aria-describedby="basic-addon1">
+													</div>
+												</div>
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md">
+								<div class="card border-0">
+									<div class="card-body">
+										<h5 class="card-title">Number of questions</h5>
+										<p class="card-text">Number of questions to ask for the round</p>
+										<label for="num_games" class="form-label">Number of questions:
+										</label><span id="gameValue"></span>
+										<input type="range" class="form-range" value="20" min="1" max="50"
+											id="num_games">
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+
+				</div>
+
 			</div>
 
 		</div>
