@@ -1,11 +1,18 @@
-var nn6 = document.getElementById && !document.all;
+// -----------------------
+// Define global variables
+// -----------------------
+let options = {};
 
 var time = 0;
 var start_time = 0;
 var game_over = false;
 var light = 0;
 var num_right = 0;
-const num_questions = 25;
+var num_questions = 20;
+
+// Required modules
+import configuration from '../app/config.js';
+import * as dataTools from '../util/datatools-module.js';
 
 function game_over_reset() {
 	document.getElementById('gameover').style.display = 'block';
@@ -21,17 +28,17 @@ function start_game() {
 	document.getElementById('squarecolor').style.display = 'block';
 	game_over = false;
 	num_right = 0;
-	setTimeout('inc_time()', 100);
+	setTimeout(inc_time, 100);
 	setstatus('0/' + num_questions.toString());
 
 	gen_square();
 
-	st = new Date();
+	let st = new Date();
 	start_time = st.getTime();
 }
 
 function inc_time() {
-	st = new Date();
+	let st = new Date();
 	time = st.getTime() - start_time;
 
 	time /= 1000;
@@ -39,7 +46,7 @@ function inc_time() {
 
 	settimer('Time: ' + time);
 
-	if (!game_over) setTimeout('inc_time()', 100);
+	if (!game_over) setTimeout(inc_time, 100);
 }
 
 function gen_square() {
@@ -80,32 +87,194 @@ function winner() {
 	game_over = 1;
 	document.getElementById('squarecolor').style.display = 'none';
 	document.getElementById('gamesuccess').style.display = 'block';
-	st = new Date();
-	time = st.getTime() - start_time;
+	let st = new Date();
+	let time = st.getTime() - start_time;
 	time = Math.round(time / 10) / 100;
 	setfinaltime('Final Time: ' + time);
 	document.getElementById('ft').value = time;
 	document.getElementById('fc').value = gc(time);
 }
 
-// condition ? expressionIfTrue : expressionIfFalse;
 function setfinaltime(text) {
-	nn6 ? (document.getElementById('finaltime').innerHTML = text) : (document.all.finaltime.innerHTML = text);
+	$('#finaltime').html(text);
 }
 
 function settimer(text) {
-	nn6 ? (document.getElementById('statustimer').innerHTML = text) : (document.all.statustimer.innerHTML = text);
+	$('#statustimer').html(text);
 }
 
 function setstatus(text) {
-	nn6 ? (document.getElementById('status').innerHTML = text) : (document.all.status.innerHTML = text);
+	$('#status').html(text);
 }
 
 function setsquare(text) {
 	text = 'Square: ' + text;
-	nn6 ? (document.getElementById('squareid').innerHTML = text) : (document.all.squareid.innerHTML = text);
+	$('#squareid').html(text);
 }
 
 function gc(t) {
 	return calc(t);
 }
+
+/**
+ * Saves the current settings to local storage
+ */
+function saveSettings() {
+	dataTools.saveItem('numQuestions', options.numQuestions);
+	dataTools.saveItem('light', options.lightColor);
+	dataTools.saveItem('dark', options.darkColor);
+	console.log('saved', options)
+}
+
+/**
+ * Read saved settings from local storage
+ */
+function loadSettings() {
+	// Set number of questions
+	options.numQuestions = parseInt(dataTools.readItem('numQuestions'));
+	$('#gameValue').text(options.numQuestions);
+	num_questions = options.numQuestions;
+	$('#numQuestions').val(num_questions);
+
+	// Set color options
+	options.lightColor = dataTools.readItem('light');
+	$('#btn_light').css('background-color', options.lightColor);
+	$('#txt_lightSquare').val(options.lightColor);
+
+	options.darkColor = dataTools.readItem('dark');
+	$('#btn_dark').css('background-color', options.darkColor);
+	$('#txt_darkSquare').val(options.darkColor);
+
+	console.log('loaded', options)
+}
+
+/**
+ * Program Initialization. Load config settings and other related tasks
+ */
+function initializeApp() {
+	// Name the app
+	$('title').text(`${configuration.app.name}`);
+	$('#title_topbar').text(`${configuration.app.name}`);
+
+	// Version number of the app
+	$('#versionNumber').text('version: ' + `${configuration.app.version}`);
+	$('#versionNumber').addClass('h6');
+
+	// Load up initial options from config
+	options.numQuestions = configuration.defaults.numQuestions;
+	options.lightColor = configuration.defaults.lightColor;
+	options.darkColor = configuration.defaults.darkColor;
+
+	// Save defaults to local storage if not already present
+
+	if (dataTools.readItem('numQuestions') === null) {
+		dataTools.saveItem('numQuestions', options.numQuestions);
+	}
+
+	if (dataTools.readItem('light') === null) {
+		dataTools.saveItem('light', options.lightColor);
+	}
+
+	if (dataTools.readItem('dark') === null) {
+		dataTools.saveItem('dark', options.darkColor);
+	}
+
+	console.log(options);
+
+	// Set some UI values and focus
+	loadSettings();
+
+	$('#btn_start').focus();
+}
+
+/**
+ * Update the options based on the current settings of all the text inputs
+ */
+function setOptionsBasedOnTextInputs() {
+	options.lightColor = $('#txt_lightSquare').val();
+	options.darkColor = $('#txt_darkSquare').val();
+
+	$('#btn_light').css('background-color', options.lightColor);
+	$('#btn_dark').css('background-color', options.darkColor);
+}
+
+/**
+ * Update the API query options based on the current settings of all the slider values
+ */
+function setOptionsBasedOnSliderSettings() {
+	options.numQuestions = $('#numQuestions').val();
+	$('#gameValue').text(options.numQuestions);
+	num_questions = options.numQuestions;
+}
+
+function resetSettings() {
+	options.numQuestions = configuration.defaults.numQuestions;
+	options.lightColor = configuration.defaults.lightColor;
+	options.darkColor = configuration.defaults.darkColor;
+
+	saveSettings();
+	loadSettings();
+
+	location.reload();
+}
+
+/**
+ * Assign all the required event listeners to the required controls
+ */
+function initializeControls() {
+	// Assign action to buttons
+	$('#btn_start').on('click', function () {
+		start_game();
+	});
+
+	$('#btn_restart').on('click', function () {
+		start_game();
+	});
+
+	$('#btn_light').on('click', function () {
+		click_light();
+	});
+
+	$('#btn_dark').on('click', function () {
+		click_dark();
+	});
+
+	$('#btn_reset').on('click', function () {
+		resetSettings();
+	});
+
+	// Assign actions on change to options
+
+	// Update the options based on the radio settings
+	$('input[type="text"]').on('input', function () {
+		setOptionsBasedOnTextInputs();
+		saveSettings();
+	});
+
+	// Update the options based on the sliders
+	$('input[type="range"]').on('change', function () {
+		setOptionsBasedOnSliderSettings();
+		saveSettings();
+	});
+
+	// Set up the color pickers
+	$(document).ready(function () {
+		$('.colorpicker').each(function () {
+			$(this).minicolors({
+				control: 'wheel',
+				format: 'hex',
+				letterCase: 'lowercase',
+				theme: 'bootstrap',
+			});
+		});
+	});
+
+}
+
+/**
+ * Start initialization once page is ready
+ */
+$(document).ready(function () {
+	initializeApp();
+	initializeControls();
+});

@@ -1,10 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html>
 
 <head>
 	<title>Chess Colors Speed Quiz</title>
-	<link rel="stylesheet" href="style/main.css" type="text/css">
-	<script type="text/javascript" src="js/colors.js"></script>
+	<link rel="icon" href="data:,">
 
 	<!-- JQuery (https://jquery.com/) -->
 	<script src="./lib/jquery/jquery-3.7.1.min.js"></script>
@@ -12,6 +11,14 @@
 	<!-- Bootstrap (https://getbootstrap.com/docs/5.3/getting-started/download/) -->
 	<link rel="stylesheet" href="./lib/bootstrap/bootstrap-5.3.5.min.css">
 	<script src="./lib/bootstrap/bootstrap-5.3.5.bundle.min.js"></script>
+
+	<!-- MiniColors (https://github.com/claviska/jquery-minicolors) -->
+	<link rel="stylesheet" href="./lib/jquery-minicolors/jquery.minicolors.css">
+	<script src="./lib/jquery-minicolors/jquery.minicolors.min.js"></script>
+
+	<!-- Core Application -->
+	<link rel="stylesheet" href="style/main.css" type="text/css">
+	<script type="module" src="js/colors.js"></script>
 
 </head>
 
@@ -40,13 +47,12 @@ TODO:
 							<div class="card-body col-12">
 
 								<div id=startbutton>
-									<input type=button value="Start" class="btn btn-primary" onclick="start_game()">
+									<input id="btn_start" type=button value="Start" class="btn btn-primary">
 								</div>
 
 								<div id=gameover style="display:none;">
 									<div class="p-1 h3 fs-2 text-danger">Game Over!</div>
-									<input type=button value="Try Again?" class="btn btn-primary"
-										onclick="start_game()">
+									<input id="btn_restart" type=button value="Try Again?" class="btn btn-primary">
 								</div>
 
 								<div id=gamesuccess style="display:none;">
@@ -56,37 +62,47 @@ TODO:
 										onclick="start_game()">
 								</div>
 
-								<div id=squarecolor style="display:none;">
-									<div class="p-1 h2 fs-2" id=squareid>Square:</div>
-									<input type="button" onclick="click_light();" class="square lsquare" value="light">
+								<div id=squarecolor style="display:block;">
+									<div class="p-1 h2 fs-2" id=squareid></div>
+									<input id="btn_light" type="button" class="square fs-1" value="light">
 									&nbsp;
-									<input type="button" onclick="click_dark();" class="square dsquare" value="dark">
-									<br><br>
-									<p id="status" style="font-size:200%">0/25</p>
+									<input id="btn_dark" type="button" class="square fs-1" value="dark">
+								</div>
+
+								<div>
+									<p id="status" style="font-size:200%"></p>
 									<p id="statustimer" style="font-size:200%"></p>
+
 								</div>
 
 							</div>
-						</div>
-
-						<div class="card">
-
-							<div class="card-body">
-								<h5 class="card-title">How to play</h5>
-								<p class="card-text">Press the start button</p>
-								<p class="card-text">Click either the light or dark box that matches the square
-									coordinate. Miss one and you have to start over again</p>
-								<p class="card-text">Get 25 in a row to win</p>
-							</div>
-
 						</div>
 
 					</div>
 
 				</div>
 
-				<div class="row ps-1 pe-1">
-					<div id="options" class="col-12 col-xxl-7 order-1 pt-1">
+
+				<div class="row pt-1 ps-1 pe-1">
+					<div id="options" class="col">
+						<div class="card">
+
+							<div class="card-body">
+								<h5 class="card-title text-center">How to play</h5>
+								<p class="card-text">Press the start button</p>
+								<p class="card-text">Click either the light or dark box that matches the square
+									coordinate. Miss one and you have to start over again</p>
+							</div>
+
+						</div>
+
+
+					</div>
+				</div>
+
+
+				<div class="row pt-1 ps-1 pe-1">
+					<div id="options" class="col">
 						<div class="card">
 							<h5 class="card-header">Options</h5>
 
@@ -96,18 +112,25 @@ TODO:
 									<div class="col-md">
 										<div class="card border-0">
 											<div class="card-body">
+												<h5 class="card-title">Square colors</h5>
 												<div class="row justify-content-center">
 													<div class="col-6">
-														<label for="endDate">Light Square Color</label>
-														<input id="txt_eco" type="text" class="form-control" maxlength="7"
-														placeholder="Light Square Color in Hex (ex: #aabbcc)" aria-label="Opening ECO"
-														aria-describedby="basic-addon1">
+														<label for="txt_lightSquare">Light Square Color</label>
+														<input id="txt_lightSquare" type="text"
+															class="form-control colorpicker" data-control="wheel"
+															maxlength="7"
+															placeholder="Light Square Color in Hex (ex: #aabbcc)"
+															aria-label="Light Square Color"
+															aria-describedby="txt_lightSquare">
 													</div>
 													<div class="col-6">
-														<label for="endDate">Dark Square Color</label>
-														<input id="txt_eco" type="text" class="form-control" maxlength="7"
-														placeholder="Dark Square Color in Hex (ex: #aabbcc)" aria-label="Opening ECO"
-														aria-describedby="basic-addon1">
+														<label for="txt_darkSquare">Dark Square Color</label>
+														<input id="txt_darkSquare" type="text"
+															class="form-control colorpicker" data-control="wheel"
+															maxlength="7"
+															placeholder="Dark Square Color in Hex (ex: #aabbcc)"
+															aria-label="Dark Square Color"
+															aria-describedby="txt_darkSquare">
 													</div>
 												</div>
 											</div>
@@ -115,25 +138,47 @@ TODO:
 										</div>
 
 									</div>
-								</div>
-							</div>
 
-							<div class="col-md">
-								<div class="card border-0">
-									<div class="card-body">
-										<h5 class="card-title">Number of questions</h5>
-										<p class="card-text">Number of questions to ask for the round</p>
-										<label for="num_games" class="form-label">Number of questions:
-										</label><span id="gameValue"></span>
-										<input type="range" class="form-range" value="20" min="1" max="50"
-											id="num_games">
+									<div class="col-md">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Number of questions</h5>
+												<p class="card-text">Number of questions to ask for the round</p>
+												<label for="numQuestions" class="form-label">Number of questions:
+												</label><span id="gameValue"></span>
+												<input type="range" class="form-range" value="20" min="1" max="50"
+													id="numQuestions">
+											</div>
+										</div>
+									</div>
+
+								</div>
+
+								<div class="col-md">
+									<div id=reset class="text-center">
+										<input id="btn_reset" type=button value="Reset" class="btn btn-primary">
 									</div>
 								</div>
 							</div>
 
 
+
+
 						</div>
 					</div>
+
+
+					<div id="appinfo" class="col-12 order-2 pt-1">
+						<div class="card">
+							<h5 class="card-header">Application info</h5>
+							<div class="card-body">
+
+								<div id="versionNumber"></div>
+
+							</div>
+						</div>
+					</div>
+
 
 				</div>
 
