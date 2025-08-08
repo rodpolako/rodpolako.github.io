@@ -16,12 +16,6 @@ import * as dataTools from '../util/datatools-module.js';
 
 // TODO: Clean up the JS
 
-function manageElements(elementArray, attribute, value) {
-	elementArray.forEach((element) => {
-		$(element).css(attribute, value);
-	});
-}
-
 // Game-related functions
 function gameOver() {
 	game_over = true;
@@ -57,33 +51,16 @@ function startGame() {
 	startingTime = new Date().getTime();
 }
 
-/**
- * Updates the progress bar on the screen
- *
- * @param {int} partial_value  The number of completed puzzles (numerator)
- * @param {int} total_value    The total number of puzzles (denominator)
- */
-function updateProgressBar(partial_value, total_value) {
-	// Do the math
-	const progress = Math.round((partial_value / total_value) * 100);
 
-	// Show the result
-	let progresspercent = progress + '%';
-	$('#progressbar').width(progresspercent);
-	$('#progressbar').text(progresspercent);
-}
-
-function randomInteger(min, max) {
-	return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 function generateTestSquare() {
 	// Generate a random row and column (within limits)
 	var row = randomInteger(1, rowLimit);
 	var col = randomInteger(1, columnLimit);
 
-	// If both row & column are even or if both are odd then the square is dark, otherwise it is light
+	// If BOTH row & column are even or if BOTH are odd then the square is dark, otherwise it is light
 	light_square = true;
+
 	if ((row % 2 === 0 && col % 2 === 0) || (row % 2 !== 0 && col % 2 !== 0)) {
 		light_square = false;
 	}
@@ -109,16 +86,71 @@ function setfinaltime(text) {
 }
 
 function setsquare(text) {
-	//text = 'Square: ' + text;
 	$('#squareTitle').html(text);
 }
 
-function checkSquare(light) {
-	if (light === light_square || !light === !light_square) {
+
+
+
+
+// ---------------------------------------------------------------------------------
+
+
+/**
+ * Helper function to compare the status of the called function against the value of the light_square status
+ * If a match either way, proceed to the next question
+ * Otherwise, the game is over
+ * 
+ * @param {Boolean} square 	Send true if testing against Light squares and false if testing against Dark squares
+ * @returns 
+ */
+function checkSquare(square) {
+	if (square === light_square || !square === !light_square) {
 		nextQuestion();
 		return;
 	}
+
 	gameOver();
+}
+
+/**
+ * Function to set the same CSS attribute to an array of elements
+ * 
+ * @param {*} elementArray 	The array of the element names
+ * @param {*} attribute 	The attribute to modify
+ * @param {*} value 		The value to use for the CSS
+ */
+function manageElements(elementArray, attribute, value) {
+	elementArray.forEach((element) => {
+		$(element).css(attribute, value);
+	});
+}
+
+/**
+ * Updates the progress bar on the screen
+ *
+ * @param {int} partial_value  The number of completed puzzles (numerator)
+ * @param {int} total_value    The total number of puzzles (denominator)
+ */
+function updateProgressBar(partial_value, total_value) {
+	// Do the math
+	const progress = Math.round((partial_value / total_value) * 100);
+
+	// Show the result
+	let progresspercent = progress + '%';
+	$('#progressbar').width(progresspercent);
+	$('#progressbar').text(progresspercent);
+}
+
+/**
+ * Generate a random integer within a range (inclusive of the start and end)
+ * 
+ * @param {*} min 	The lower end of the range
+ * @param {*} max 	The upper end of the range
+ * @returns 	The randomly generated number
+ */
+function randomInteger(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /**
