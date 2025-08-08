@@ -25,16 +25,17 @@ function manageElements(elementArray, attribute, value) {
 // Game-related functions
 function gameOver() {
 	game_over = true;
-	manageElements(['#gameover', '#startbutton'], 'display', 'block');
-	manageElements(['#squarecolor'], 'display', 'none');
-
+	manageElements(['#gameFail', '#startButton', '#squarecolor'], 'display', 'block');
+	manageElements(['#squareTitle'], 'display', 'none');
+	$('#btn_start').val('Restart');
 	updateProgressBar(numberCorrect, numberQuestions);
 }
 
 function winner() {
 	game_over = true;
-	manageElements(['#startbutton', '#gamesuccess'], 'display', 'block');
-	manageElements(['#squarecolor'], 'display', 'none');
+	manageElements(['#startButton', '#gameSuccess', '#squarecolor'], 'display', 'block');
+	manageElements(['#squareTitle'], 'display', 'none');
+	$('#btn_start').val('Restart');
 	updateProgressBar(numberCorrect, numberQuestions);
 
 	let st = new Date();
@@ -45,8 +46,8 @@ function winner() {
 
 function startGame() {
 	game_over = false;
-	manageElements(['#squarecolor', '#statusDetails'], 'display', 'block');
-	manageElements(['#gameover', '#gamesuccess', '#startbutton'], 'display', 'none');
+	manageElements(['#squarecolor', '#statusDetails', '#squareTitle'], 'display', 'block');
+	manageElements(['#gameFail', '#gameSuccess', '#startButton'], 'display', 'none');
 
 	numberCorrect = 0;
 	updateProgressBar(numberCorrect, numberQuestions);
@@ -92,7 +93,6 @@ function generateTestSquare() {
 	setsquare(chosenSquare);
 }
 
-
 function nextQuestion() {
 	numberCorrect += 1;
 	if (numberCorrect === numberQuestions) {
@@ -109,14 +109,9 @@ function setfinaltime(text) {
 }
 
 function setsquare(text) {
-	text = 'Square: ' + text;
-	$('#squareid').html(text);
+	//text = 'Square: ' + text;
+	$('#squareTitle').html(text);
 }
-
-
-
-
-
 
 function checkSquare(light) {
 	if (light === light_square || !light === !light_square) {
@@ -125,7 +120,6 @@ function checkSquare(light) {
 	}
 	gameOver();
 }
-
 
 /**
  * Saves the current settings to local storage
@@ -235,11 +229,11 @@ function initializeControls() {
 	});
 
 	$('#btn_light').on('click', function () {
-		checkSquare(true)
+		checkSquare(true);
 	});
 
 	$('#btn_dark').on('click', function () {
-		checkSquare(false)
+		checkSquare(false);
 	});
 
 	$('#btn_reset').on('click', function () {
