@@ -10,6 +10,8 @@ const configuration = {
 		numQuestions: 20,
 		lightColor: '#dee3e6',
 		darkColor: '#8ca2ad',
+		rowLimit: 8,
+		columnLimit: 8
 	},
 
 	// Item Collections

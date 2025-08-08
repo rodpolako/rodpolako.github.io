@@ -28,7 +28,7 @@
 		<div id="main_app_container" class="row mx-0">
 
 			<div class="container-fluid">
- 
+
 				<div class="row pt-1 ps-1 pe-1 align-items-center">
 					<div class="col">
 
@@ -52,7 +52,8 @@
 										<div class="card col-4">
 
 											<div class="card-body">
-												<div class="p-1" style="font-size: 300%; font-weight: bold;" id="squareTitle"></div>
+												<div class="p-1" style="font-size: 300%; font-weight: bold;"
+													id="squareName"></div>
 
 												<div id="gameFail" style="display:none;">
 													<div class="p-1 h3 fs-2 text-danger">Fail!</div>
@@ -60,7 +61,7 @@
 
 												<div id="gameSuccess" style="display:none;">
 													<div class="p-1 h3 fs-2 text-success">Well Done!</div>
-													<h4 id="finaltime"></h4>
+													<h4 id="elapsedTime"></h4>
 												</div>
 
 												<div id="startButton">
@@ -182,6 +183,39 @@
 											</div>
 										</div>
 									</div>
+
+
+									<div class="col-12">
+										<div class="card border-0">
+											<div class="card-body">
+												<h5 class="card-title">Rows & Columns</h5>
+												<div class="row justify-content-center">
+													<div class="col-6">
+														<p class="card-text">Number of rows to use when generating squares (lower=easier)
+														</p>
+														<label for="numRows" class="form-label">Number of
+															rows:
+														</label><span id="numRowsValue"></span>
+														<input type="range" class="form-range" value="8" min="1"
+															max="8" id="numRows">
+													</div>
+													<div class="col-6">
+														<p class="card-text">Number of columns to use when generating squares (lower=easier)
+														</p>
+														<label for="numColumns" class="form-label">Number of
+															columns:
+														</label><span id="numColumnsValue"></span>
+														<input type="range" class="form-range" value="8" min="1"
+															max="8" id="numColumns">
+													</div>
+												</div>
+											</div>
+
+										</div>
+
+									</div>
+
+
 
 									<div class="col-12">
 										<div class="card border-0">

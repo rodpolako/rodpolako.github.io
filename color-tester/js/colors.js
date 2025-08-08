@@ -2,13 +2,10 @@
 // Define global variables
 // -----------------------
 let options = {};
-var startingTime = 0;
-var game_over = false;
-var light_square = false;
-var numberCorrect = 0;
-var numberQuestions = 20;
-var rowLimit = 8;
-var columnLimit = 8;
+let startingTime = 0;
+let light_square = false;
+let numberCorrect = 0;
+let numberQuestions = 0;
 
 // Required modules
 import configuration from '../app/config.js';
@@ -17,46 +14,14 @@ import * as dataTools from '../util/datatools-module.js';
 // TODO: Clean up the JS
 
 // Game-related functions
-function gameOver() {
-	game_over = true;
-	manageElements(['#gameFail', '#startButton', '#squarecolor'], 'display', 'block');
-	manageElements(['#squareTitle'], 'display', 'none');
-	$('#btn_start').val('Restart');
-	updateProgressBar(numberCorrect, numberQuestions);
-}
 
-function winner() {
-	game_over = true;
-	manageElements(['#startButton', '#gameSuccess', '#squarecolor'], 'display', 'block');
-	manageElements(['#squareTitle'], 'display', 'none');
-	$('#btn_start').val('Restart');
-	updateProgressBar(numberCorrect, numberQuestions);
-
-	let st = new Date();
-	let time = st.getTime() - startingTime;
-	time = Math.round(time / 10) / 100;
-	setfinaltime('Final Time: ' + time);
-}
-
-function startGame() {
-	game_over = false;
-	manageElements(['#squarecolor', '#statusDetails', '#squareTitle'], 'display', 'block');
-	manageElements(['#gameFail', '#gameSuccess', '#startButton'], 'display', 'none');
-
-	numberCorrect = 0;
-	updateProgressBar(numberCorrect, numberQuestions);
-
-	generateTestSquare();
-
-	startingTime = new Date().getTime();
-}
-
-
-
+/**
+ * Generate a square to test and show it to the user
+ */
 function generateTestSquare() {
 	// Generate a random row and column (within limits)
-	var row = randomInteger(1, rowLimit);
-	var col = randomInteger(1, columnLimit);
+	let row = randomInteger(1, options.rowLimit);
+	let col = randomInteger(1, options.columnLimit);
 
 	// If BOTH row & column are even or if BOTH are odd then the square is dark, otherwise it is light
 	light_square = true;
@@ -67,58 +32,110 @@ function generateTestSquare() {
 
 	// Show the value on the screen
 	let chosenSquare = String.fromCharCode(col + 96) + row;
-	setsquare(chosenSquare);
+	$('#squareName').html(chosenSquare);
 }
 
-function nextQuestion() {
-	numberCorrect += 1;
-	if (numberCorrect === numberQuestions) {
-		winner();
-		return;
-	}
+/**
+ * Start a new game
+ */
+function startGame() {
+	// Visual elements to hide/show at start of game
+	manageElements(['#squarecolor', '#statusDetails', '#squareName'], 'display', 'block');
+	manageElements(['#gameFail', '#gameSuccess', '#startButton'], 'display', 'none');
 
+	// Set initial values and update progress bar
+	numberCorrect = 0;
 	updateProgressBar(numberCorrect, numberQuestions);
+
+	// Note the starting time in order to compute the elapsed time later
+	startingTime = new Date().getTime();
+
+	// Pick a test square
 	generateTestSquare();
 }
 
-function setfinaltime(text) {
-	$('#finaltime').html(text);
+/**
+ * End the game and show either the success or fail message
+ *
+ * @param {boolean} winner 	Set to true to show success.  Set to false to show fail.
+ * @returns
+ */
+function gameEnd(winner) {
+	// Update the progress bar
+	updateProgressBar(numberCorrect, numberQuestions);
+
+	// Compute the elapsed time and display it
+	let finishTime = new Date();
+	let elapsedTime = finishTime.getTime() - startingTime;
+	elapsedTime = Math.round(elapsedTime / 10) / 100;
+	$('#elapsedTime').html('Elapsed Time: ' + elapsedTime);
+
+	// Rename the start button to Restart in order to quickly go again
+	$('#btn_start').val('Restart');
+
+	// Shared visual elements hide/show regardless of win/loss
+	manageElements(['#squareName'], 'display', 'none');
+	manageElements(['#startButton', '#squarecolor'], 'display', 'block');
+
+	// If winner, show the Success message then exit
+	if (winner) {
+		manageElements(['#gameSuccess'], 'display', 'block');
+		return;
+	}
+
+	// Show the Fail message
+	manageElements(['#gameFail'], 'display', 'block');
 }
-
-function setsquare(text) {
-	$('#squareTitle').html(text);
-}
-
-
-
-
-
-// ---------------------------------------------------------------------------------
-
 
 /**
- * Helper function to compare the status of the called function against the value of the light_square status
- * If a match either way, proceed to the next question
+ * Helper function to compare the user choice against the value of the light_square status
+ * If a match either way, update counts and progress bar and then proceed to the next question
  * Otherwise, the game is over
- * 
- * @param {Boolean} square 	Send true if testing against Light squares and false if testing against Dark squares
- * @returns 
+ *
+ * @param {Boolean} square 	Set to true if user choses light square and false if user selects dark square
+ * @returns
  */
 function checkSquare(square) {
+	// Exit early if the test is not yet started
+	if ($('#squareName').html() === '') {
+		return;
+	}
+
+	// If answer is correct, increment, update progress and ask next question
 	if (square === light_square || !square === !light_square) {
+		numberCorrect += 1;
+		updateProgressBar(numberCorrect, numberQuestions);
+
 		nextQuestion();
 		return;
 	}
 
-	gameOver();
+	// Wrong answer, show fail
+	gameEnd(false);
+}
+
+/**
+ * Check if the game is over (ie: number of right answers = total number of questions)
+ *
+ * @returns
+ */
+function nextQuestion() {
+	// Exit early if game is over
+	if (numberCorrect === numberQuestions) {
+		gameEnd(true);
+		return;
+	}
+
+	// Ask the next question by chosing a new square
+	generateTestSquare();
 }
 
 /**
  * Function to set the same CSS attribute to an array of elements
- * 
- * @param {*} elementArray 	The array of the element names
- * @param {*} attribute 	The attribute to modify
- * @param {*} value 		The value to use for the CSS
+ *
+ * @param {Array} elementArray 	The array of the element names
+ * @param {string} attribute 	The attribute to modify
+ * @param {string} value 		The value to use for the CSS
  */
 function manageElements(elementArray, attribute, value) {
 	elementArray.forEach((element) => {
@@ -144,9 +161,9 @@ function updateProgressBar(partial_value, total_value) {
 
 /**
  * Generate a random integer within a range (inclusive of the start and end)
- * 
- * @param {*} min 	The lower end of the range
- * @param {*} max 	The upper end of the range
+ *
+ * @param {int} min 	The lower end of the range
+ * @param {int} max 	The upper end of the range
  * @returns 	The randomly generated number
  */
 function randomInteger(min, max) {
@@ -160,6 +177,9 @@ function saveSettings() {
 	dataTools.saveItem('numQuestions', options.numQuestions);
 	dataTools.saveItem('light', options.lightColor);
 	dataTools.saveItem('dark', options.darkColor);
+	dataTools.saveItem('rowLimit', options.rowLimit);
+	dataTools.saveItem('columnLimit', options.columnLimit);
+
 	//console.log('saved', options)
 }
 
@@ -169,9 +189,18 @@ function saveSettings() {
 function loadSettings() {
 	// Set number of questions
 	options.numQuestions = parseInt(dataTools.readItem('numQuestions'));
-	numberQuestions = options.numQuestions;
+	numberQuestions = parseInt(options.numQuestions);
 	$('#gameValue').text(options.numQuestions);
 	$('#numQuestions').val(numberQuestions);
+
+	// Set the row & column limits (to help make the grid smaller for easier learning)
+	options.rowLimit = parseInt(dataTools.readItem('rowLimit'));
+	$('#numRowsValue').text(options.rowLimit);
+	$('#numRows').val(options.rowLimit);
+
+	options.columnLimit = parseInt(dataTools.readItem('columnLimit'));
+	$('#numColumnsValue').text(options.columnLimit);
+	$('#numColumns').val(options.columnLimit);
 
 	// Set color options
 	options.lightColor = dataTools.readItem('light');
@@ -198,9 +227,7 @@ function initializeApp() {
 	$('#versionNumber').addClass('h6');
 
 	// Load up initial options from config
-	options.numQuestions = configuration.defaults.numQuestions;
-	options.lightColor = configuration.defaults.lightColor;
-	options.darkColor = configuration.defaults.darkColor;
+	loadConfigSettings();
 
 	// Save defaults to local storage if not already present
 	if (dataTools.readItem('numQuestions') === null) {
@@ -213,6 +240,14 @@ function initializeApp() {
 
 	if (dataTools.readItem('dark') === null) {
 		dataTools.saveItem('dark', options.darkColor);
+	}
+
+	if (dataTools.readItem('rowLimit') === null) {
+		dataTools.saveItem('rowLimit', options.rowLimit);
+	}
+
+	if (dataTools.readItem('columnLimit') === null) {
+		dataTools.saveItem('columnLimit', options.columnLimit);
 	}
 
 	// Set the UI values and focus
@@ -235,16 +270,33 @@ function setOptionsBasedOnTextInputs() {
  * Update the API query options based on the current settings of all the slider values
  */
 function setOptionsBasedOnSliderSettings() {
-	options.numQuestions = $('#numQuestions').val();
+	options.numQuestions = parseInt($('#numQuestions').val());
 	$('#gameValue').text(options.numQuestions);
 	numberQuestions = options.numQuestions;
+
+	options.rowLimit = parseInt($('#numRows').val());
+	$('#numRowsValue').text(options.rowLimit);
+
+	options.columnLimit = parseInt($('#numColumns').val());
+	$('#numColumnsValue').text(options.columnLimit);
 }
 
-function resetSettings() {
+/**
+ * Load settings from config file
+ */
+function loadConfigSettings() {
 	options.numQuestions = configuration.defaults.numQuestions;
 	options.lightColor = configuration.defaults.lightColor;
 	options.darkColor = configuration.defaults.darkColor;
+	options.rowLimit = configuration.defaults.rowLimit;
+	options.columnLimit = configuration.defaults.columnLimit;
+}
 
+/**
+ * Reset all settings back to config defaults
+ */
+function resetSettings() {
+	loadConfigSettings();
 	saveSettings();
 	loadSettings();
 
