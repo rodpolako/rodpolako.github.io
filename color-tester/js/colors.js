@@ -2,10 +2,8 @@
 // Define global variables
 // -----------------------
 let options = {};
-let startingTime = 0;
-let light_square = false;
-let numberCorrect = 0;
-let numberQuestions = 0;
+let square = {};
+let round = {};
 
 // Required modules
 import configuration from '../app/config.js';
@@ -15,24 +13,91 @@ import * as dataTools from '../util/datatools-module.js';
 
 // Game-related functions
 
+function findAvailableKnightMoves() {
+	square.validKnightMoves = [];
+	let validsquare;
+
+	let testSequence = [2, -2];
+
+	// Test for horizontal Ls
+	testSequence.forEach((column) => {
+		let columnTest = square.col + column;
+
+		if (columnTest > 0 && columnTest <= options.columnLimit) {
+			if (square.row - 1 > 0) {
+				validsquare = generateAlgebraicName(columnTest, square.row - 1);
+				square.validKnightMoves.push(validsquare);
+			}
+
+			if (square.row + 1 <= options.rowLimit) {
+				validsquare = generateAlgebraicName(columnTest, square.row + 1);
+				square.validKnightMoves.push(validsquare);
+			}
+		}
+	});
+
+	// Test for vertical Ls
+	testSequence.forEach((row) => {
+		let rowTest = square.row + row;
+
+		if (rowTest > 0 && rowTest <= options.rowLimit) {
+			if (square.col - 1 > 0) {
+				validsquare = generateAlgebraicName(square.col - 1, rowTest);
+				square.validKnightMoves.push(validsquare);
+			}
+
+			if (square.col + 1 <= options.columnLimit) {
+				validsquare = generateAlgebraicName(square.col + 1, rowTest);
+				square.validKnightMoves.push(validsquare);
+			}
+		}
+	});
+
+	square.validKnightMoves.sort();
+}
+
+function generateAlgebraicName(col, row) {
+	return String.fromCharCode(col + 96) + row;
+}
+
+function showSquare() {
+	// Show the value on the screen
+	$('#squareName').html(square.name);
+}
+
+function determineSquareAttributes() {
+	// Assign the algebraic notation name for the square
+	square.name = generateAlgebraicName(square.col, square.row);
+
+	// Determine if the square is light or dark
+
+	// First, assume it is light
+	square.light_square = true;
+
+	// If BOTH row & column are even or if BOTH are odd then the square is dark, otherwise leave it as light
+	if ((square.row % 2 === 0 && square.col % 2 === 0) || (square.row % 2 !== 0 && square.col % 2 !== 0)) {
+		square.light_square = false;
+	}
+
+	// Determine the available Knight moves for the square
+	findAvailableKnightMoves();
+
+	//console.log(square);
+}
+
 /**
  * Generate a square to test and show it to the user
  */
 function generateTestSquare() {
 	// Generate a random row and column (within limits)
-	let row = randomInteger(1, options.rowLimit);
-	let col = randomInteger(1, options.columnLimit);
+	square.row = randomInteger(1, options.rowLimit);
+	square.col = randomInteger(1, options.columnLimit);
 
-	// If BOTH row & column are even or if BOTH are odd then the square is dark, otherwise it is light
-	light_square = true;
-
-	if ((row % 2 === 0 && col % 2 === 0) || (row % 2 !== 0 && col % 2 !== 0)) {
-		light_square = false;
-	}
+	// Get the specifics of this square
+	determineSquareAttributes();
 
 	// Show the value on the screen
-	let chosenSquare = String.fromCharCode(col + 96) + row;
-	$('#squareName').html(chosenSquare);
+	showSquare();
 }
 
 /**
@@ -44,11 +109,11 @@ function startGame() {
 	manageElements(['#gameFail', '#gameSuccess', '#startButton'], 'display', 'none');
 
 	// Set initial values and update progress bar
-	numberCorrect = 0;
-	updateProgressBar(numberCorrect, numberQuestions);
+	round.numberCorrect = 0;
+	updateProgressBar(round.numberCorrect, round.numberQuestions);
 
 	// Note the starting time in order to compute the elapsed time later
-	startingTime = new Date().getTime();
+	round.startingTime = new Date().getTime();
 
 	// Pick a test square
 	generateTestSquare();
@@ -62,13 +127,13 @@ function startGame() {
  */
 function gameEnd(winner) {
 	// Update the progress bar
-	updateProgressBar(numberCorrect, numberQuestions);
+	updateProgressBar(round.numberCorrect, round.numberQuestions);
 
 	// Compute the elapsed time and display it
 	let finishTime = new Date();
-	let elapsedTime = finishTime.getTime() - startingTime;
-	elapsedTime = Math.round(elapsedTime / 10) / 100;
-	$('#elapsedTime').html('Elapsed Time: ' + elapsedTime);
+	round.elapsedTime = finishTime.getTime() - round.startingTime;
+	round.elapsedTime = Math.round(round.elapsedTime / 10) / 100;
+	$('#elapsedTime').html('Elapsed Time: ' + round.elapsedTime);
 
 	// Rename the start button to Restart in order to quickly go again
 	$('#btn_start').val('Restart');
@@ -95,16 +160,16 @@ function gameEnd(winner) {
  * @param {Boolean} square 	Set to true if user choses light square and false if user selects dark square
  * @returns
  */
-function checkSquare(square) {
+function checkSquare(valueToTest) {
 	// Exit early if the test is not yet started
 	if ($('#squareName').html() === '') {
 		return;
 	}
 
 	// If answer is correct, increment, update progress and ask next question
-	if (square === light_square || !square === !light_square) {
-		numberCorrect += 1;
-		updateProgressBar(numberCorrect, numberQuestions);
+	if (valueToTest === square.light_square || !valueToTest === !square.light_square) {
+		round.numberCorrect += 1;
+		updateProgressBar(round.numberCorrect, round.numberQuestions);
 
 		nextQuestion();
 		return;
@@ -121,7 +186,7 @@ function checkSquare(square) {
  */
 function nextQuestion() {
 	// Exit early if game is over
-	if (numberCorrect === numberQuestions) {
+	if (round.numberCorrect === round.numberQuestions) {
 		gameEnd(true);
 		return;
 	}
@@ -189,9 +254,9 @@ function saveSettings() {
 function loadSettings() {
 	// Set number of questions
 	options.numQuestions = parseInt(dataTools.readItem('numQuestions'));
-	numberQuestions = parseInt(options.numQuestions);
+	round.numberQuestions = parseInt(options.numQuestions);
 	$('#gameValue').text(options.numQuestions);
-	$('#numQuestions').val(numberQuestions);
+	$('#numQuestions').val(round.numberQuestions);
 
 	// Set the row & column limits (to help make the grid smaller for easier learning)
 	options.rowLimit = parseInt(dataTools.readItem('rowLimit'));
@@ -272,7 +337,7 @@ function setOptionsBasedOnTextInputs() {
 function setOptionsBasedOnSliderSettings() {
 	options.numQuestions = parseInt($('#numQuestions').val());
 	$('#gameValue').text(options.numQuestions);
-	numberQuestions = options.numQuestions;
+	round.numberQuestions = options.numQuestions;
 
 	options.rowLimit = parseInt($('#numRows').val());
 	$('#numRowsValue').text(options.rowLimit);
