@@ -23,16 +23,18 @@ function findAvailableKnightMoves() {
 	testSequence.forEach((column) => {
 		let columnTest = square.col + column;
 
-		if (columnTest > 0 && columnTest <= options.columnLimit) {
-			if (square.row - 1 > 0) {
-				validsquare = generateAlgebraicName(columnTest, square.row - 1);
-				square.validKnightMoves.push(validsquare);
-			}
+		if (columnTest <= 0 || columnTest >= options.columnLimit) {
+			return;
+		}
 
-			if (square.row + 1 <= options.rowLimit) {
-				validsquare = generateAlgebraicName(columnTest, square.row + 1);
-				square.validKnightMoves.push(validsquare);
-			}
+		if (square.row - 1 > 0) {
+			validsquare = generateAlgebraicName(columnTest, square.row - 1);
+			square.validKnightMoves.push(validsquare);
+		}
+
+		if (square.row + 1 <= options.rowLimit) {
+			validsquare = generateAlgebraicName(columnTest, square.row + 1);
+			square.validKnightMoves.push(validsquare);
 		}
 	});
 
@@ -40,16 +42,18 @@ function findAvailableKnightMoves() {
 	testSequence.forEach((row) => {
 		let rowTest = square.row + row;
 
-		if (rowTest > 0 && rowTest <= options.rowLimit) {
-			if (square.col - 1 > 0) {
-				validsquare = generateAlgebraicName(square.col - 1, rowTest);
-				square.validKnightMoves.push(validsquare);
-			}
+		if (rowTest <= 0 || rowTest >= options.rowLimit) {
+			return;
+		}
 
-			if (square.col + 1 <= options.columnLimit) {
-				validsquare = generateAlgebraicName(square.col + 1, rowTest);
-				square.validKnightMoves.push(validsquare);
-			}
+		if (square.col - 1 > 0) {
+			validsquare = generateAlgebraicName(square.col - 1, rowTest);
+			square.validKnightMoves.push(validsquare);
+		}
+
+		if (square.col + 1 <= options.columnLimit) {
+			validsquare = generateAlgebraicName(square.col + 1, rowTest);
+			square.validKnightMoves.push(validsquare);
 		}
 	});
 
@@ -70,6 +74,77 @@ function determineSquareAttributes() {
 	square.name = generateAlgebraicName(square.col, square.row);
 
 	// Determine if the square is light or dark
+	determineLightDark();
+
+	// Determine the available Knight moves for the square
+	findAvailableKnightMoves();
+
+	// Determine inverse square
+	findMirrorSquare();
+
+	// Find diagonals for the square
+	findDiagonals();
+
+	findLines();
+	console.log(square);
+}
+
+function findLines() {
+	square.lines = [];
+
+	let line = [];
+	let row = square.row;
+	let col = square.col;
+
+	// Right to Left
+	row = square.row;
+	col = square.col;
+	line = [];
+	while (col > 1) {
+		col -= 1;
+		line.push(generateAlgebraicName(col, row));
+	}
+	line.sort();
+	square.lines.push(line);
+
+	// Left to Right
+	line = [];
+	row = square.row;
+	col = square.col;
+	while (col < options.columnLimit) {
+		col += 1;
+		line.push(generateAlgebraicName(col, row));
+	}
+	line.sort();
+	square.lines.push(line);
+
+	// Downwards
+	row = square.row;
+	col = square.col;
+	line = [];
+	while (row > 1) {
+		row -= 1;
+		line.push(generateAlgebraicName(col, row));
+	}
+	line.sort();
+	square.lines.push(line);
+
+	// Upwards
+	row = square.row;
+	col = square.col;
+	line = [];
+	while (row < options.rowLimit) {
+		row += 1;
+		line.push(generateAlgebraicName(col, row));
+	}
+	square.lines.push(line);
+}
+
+function determineLightDark() {
+	/*
+	Taken from: https://www.chess.com/video/player/achieving-full-board-awareness 
+	Level 1 (Square Awareness) - evelop square awareness. Know colour of any square instantly
+	*/
 
 	// First, assume it is light
 	square.light_square = true;
@@ -78,11 +153,83 @@ function determineSquareAttributes() {
 	if ((square.row % 2 === 0 && square.col % 2 === 0) || (square.row % 2 !== 0 && square.col % 2 !== 0)) {
 		square.light_square = false;
 	}
+}
 
-	// Determine the available Knight moves for the square
-	findAvailableKnightMoves();
+function findMirrorSquare() {
+	/*
+	Level 2 (Brother square awareness) – Know corresponding or “brother” square awareness 
+	(ex: b6-g3, f7-c2, e4-d5, b2-g7, b4-g5) Basically the mirror on both the horizontal and vertical axis).
+	*/
 
-	//console.log(square);
+	// Exit early if either the row or column numbers are odd
+	if (options.rowLimit % 2 !== 0 || options.columnLimit % 2 !== 0) {
+		square.mirror = 'N/A';
+		return;
+	}
+
+	// Find inverse row
+	let invRow = Math.abs(options.rowLimit - square.row) + 1;
+
+	// Find inverse column
+	let invCol = Math.abs(options.columnLimit - square.col) + 1;
+
+	// Add to object
+	square.mirrorSquare = generateAlgebraicName(invCol, invRow);
+}
+
+function findDiagonals() {
+	/*
+	Level 3 (Diagonal Awareness) – Know the diagonal and the color of every diagonal.  
+	Know all diagonals off of a given square (ex: b1” response would be “b1,c2,d3,e4,f5,g6,h7” and then “b1, a2”).  
+	Name the color of the square and then every square on its diagonals.
+	*/
+	square.diagonals = [];
+
+	let diagonal = [];
+	let row = square.row;
+	let col = square.col;
+
+	// Left to Right upwards
+	diagonal = [];
+	while (row < options.rowLimit && col < options.columnLimit) {
+		row += 1;
+		col += 1;
+		diagonal.push(generateAlgebraicName(col, row));
+	}
+	square.diagonals.push(diagonal);
+
+	// Right to Left upwards
+	row = square.row;
+	col = square.col;
+	diagonal = [];
+	while (row < options.rowLimit && col > 1) {
+		row += 1;
+		col -= 1;
+		diagonal.push(generateAlgebraicName(col, row));
+	}
+	square.diagonals.push(diagonal);
+
+	// Left to Right downwards
+	row = square.row;
+	col = square.col;
+	diagonal = [];
+	while (row > 1 && col < options.columnLimit) {
+		row -= 1;
+		col += 1;
+		diagonal.push(generateAlgebraicName(col, row));
+	}
+	square.diagonals.push(diagonal);
+
+	// Right to Left downwards
+	row = square.row;
+	col = square.col;
+	diagonal = [];
+	while (row > 1 && col > 1) {
+		row -= 1;
+		col -= 1;
+		diagonal.push(generateAlgebraicName(col, row));
+	}
+	square.diagonals.push(diagonal);
 }
 
 /**
