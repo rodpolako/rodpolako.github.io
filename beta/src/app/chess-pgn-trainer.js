@@ -1578,7 +1578,7 @@ function showStats() {
 
 	// Show the failed options if there were any errors in this run
 	if (stats.errors > 0) {
-		$('#modal_failedVariations').css('display', 'block');
+		$('#modal_failedVariations').css('display', 'flex');
 	} else {
 		$('#modal_failedVariations').css('display', 'none');
 	}
