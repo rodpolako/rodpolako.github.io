@@ -537,6 +537,8 @@ function createMistakesPGN() {
 		PGNText += variation + '\n\n';
 	});
 
+	failedVariations.clear(); // Clear the current failures in order to make a new failures file next time
+	
 	return PGNText;
 }
 
@@ -1627,8 +1629,6 @@ function removeDuplicateVariations(puzzlearray) {
  * @returns
  */
 function postPGNReadSetup(PGNDataFile, PGNFileName) {
-	console.log(PGNFileName);
-	console.log(PGNDataFile);
 	currentFileName = PGNFileName;
 	puzzleset = loadPGNFile(PGNDataFile);
 
