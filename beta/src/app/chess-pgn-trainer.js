@@ -91,8 +91,13 @@ $('#title_sidebar').text(`${configuration.app.name}`);
 $('#title_topbar').text(`${configuration.app.name}`);
 
 // Version number of the app
-$('#versionnumber').text(`${configuration.app.version}`);
-$('#versionnumber_sidebar').text(`${configuration.app.version}`);
+var versionNumber = configuration.app.version;
+if ($(location).prop('href').indexOf('beta') >=0) {
+	versionNumber += ' Beta'
+}
+
+$('#versionnumber').text(`${versionNumber}`);
+$('#versionnumber_sidebar').text(`${versionNumber}`);
 
 // -----------------------------------
 // Functions for related to appearance
