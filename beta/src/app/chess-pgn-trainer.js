@@ -92,8 +92,8 @@ $('#title_topbar').text(`${configuration.app.name}`);
 
 // Version number of the app
 var versionNumber = configuration.app.version;
-if ($(location).prop('href').indexOf('beta') >=0) {
-	versionNumber += ' Beta'
+if ($(location).prop('href').indexOf('beta') >= 0) {
+	versionNumber += ' Beta';
 }
 
 $('#versionnumber').text(`${versionNumber}`);
@@ -538,7 +538,7 @@ function createMistakesPGN() {
 	});
 
 	failedVariations.clear(); // Clear the current failures in order to make a new failures file next time
-	
+
 	return PGNText;
 }
 
@@ -721,6 +721,7 @@ function pauseGame() {
 			$('#btn_reset').prop('disabled', true);
 			$('#openPGN_button').prop('disabled', true);
 			$('#btn_hint').prop('disabled', true);
+			$('#btn_next').prop('disabled', true);
 			$('#btn_library').prop('disabled', true);
 			$('#analysis_link').addClass('disabled');
 
@@ -742,10 +743,11 @@ function pauseGame() {
 			// Remove focus on the pause/resume button
 			$('#btn_pause').blur();
 
-			// Re-enable the Hint, Reset and Open PGN buttons
+			// Re-enable the Hint, Reset, Next and Open PGN buttons
 			$('#btn_reset').prop('disabled', false);
 			$('#openPGN_button').prop('disabled', false);
 			$('#btn_hint').prop('disabled', false);
+			$('#btn_next').prop('disabled', false);
 			$('#btn_library').prop('disabled', false);
 			$('#analysis_link').removeClass('disabled');
 
@@ -1657,10 +1659,10 @@ function postPGNReadSetup(PGNDataFile, PGNFileName) {
 			puzzleset.forEach((PGNPuzzle) => {
 				PGNPuzzle.moves = PGNPuzzle.moves.slice(0, maxDepth);
 			});
-		}
 
-		// Remove any duplicate lines
-		puzzleset = removeDuplicateVariations(puzzleset);
+			// Remove any duplicate lines
+			puzzleset = removeDuplicateVariations(puzzleset);
+		}
 
 		// Update the range of the puzzle counters to the size of the puzzleset
 		$('#puzzleNumber').text('1');

@@ -468,8 +468,6 @@ function formatLinks(inputString) {
 		},
 	});
 
-	console.log(returnlink);
-
 	// Return the link
 	return stripNewLine(returnlink);
 }
