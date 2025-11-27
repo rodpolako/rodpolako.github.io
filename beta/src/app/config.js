@@ -21,6 +21,8 @@ const configuration = {
 		playSpeech: false,
 		maxDepth: 50,
 		embedYoutube: true,
+		sortMethod: 'name',
+		sortDirection: false
 	},
 
 	// Feature flags for components
@@ -76,6 +78,7 @@ const configuration = {
 			{ settingname: 'playAudio', switchname: '#chk_playAudio' },
 			{ settingname: 'playSpeech', switchname: '#chk_playSpeech' },
 			{ settingname: 'embedYoutube', switchname: '#chk_embedYoutube' },
+			{ settingname: 'sortDirection', switchname: '#chk_sort_desc' },
 		],
 
 		// Collection of slider settings and their associated sliders

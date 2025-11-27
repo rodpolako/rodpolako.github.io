@@ -225,6 +225,34 @@ async function validateUserAccess() {
 	return true;
 }
 
+function LichessStudySort(){
+
+	// Get value of sortMethod
+	let sortMethod = dataTools.readItem('sortMethod')
+	
+	// Get value of chk_sort_desc
+	let sortDirection = true
+	if (dataTools.readItem('sortDirection') === 'false'){
+		sortDirection = false
+	}
+
+	// clear the existing list first
+	$('#lichess_studies_list').empty();
+
+	let studyListing = JSON.parse(dataTools.readItem('StudyListing'));
+
+	// Sort the list by specified method and direction
+	sharedTools.sort_by_key(studyListing, sortMethod, sortDirection);
+
+	// Populate the list (studies only)
+	studyListing.forEach(async (workspace) => {
+		createListOfStudies(workspace);
+	});
+
+	// Save a copy of the data to the cache for future reloads
+	dataTools.saveItem('StudyListing', JSON.stringify(studyListing));
+}
+
 /**
  * Access the Lichess API and populate the modal with the results
  *
@@ -257,20 +285,13 @@ async function accessLichessAPI() {
 		return;
 	}
 
-	// Sort the list alphabetically
-	sharedTools.sort_by_key(studyListing, 'name'); // This is the default
-
-	// Other options
-	//sharedTools.sort_by_key(studyListing, 'name', false); Reverse alphabetical
-	//sharedTools.sort_by_key(studyListing, 'createdAt');
-	//sharedTools.sort_by_key(studyListing, 'createdAt', false);
-	//sharedTools.sort_by_key(studyListing, 'updatedAt');
-	//sharedTools.sort_by_key(studyListing, 'updatedAt', false);
-
 	// Populate the list (studies only)
 	await studyListing.forEach(async (workspace) => {
 		createListOfStudies(workspace);
 	});
+
+	// Sort the list by settings
+	LichessStudySort();
 
 	// Save a copy of the data to the cache for future reloads
 	dataTools.saveItem('StudyListing', JSON.stringify(studyListing));
@@ -521,4 +542,4 @@ $(document).ready(function () {
 	initalizeLichess();
 });
 
-export { accessLichessAPI, initalizeLichess };
+export { accessLichessAPI, initalizeLichess,LichessStudySort };

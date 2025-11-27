@@ -358,6 +358,14 @@ function loadSettings() {
 	if (parseInt(dataTools.readItem('maxDepth')) === 50) {
 		$('#maxPlyValue').text('∞');
 	}
+
+	$('#sortMethod').val(dataTools.readItem('sortMethod'))
+
+	$('#chk_sort_desc').prop('checked', true);
+	if (dataTools.readItem('sortDirection') === 'false') {
+		$('#chk_sort_desc').prop('checked', false);
+	}
+	
 }
 
 /**
@@ -1932,6 +1940,17 @@ $(() => {
 		$('#Dark-Color').val(color);
 		changecolor();
 	});
+
+	$('#sortMethod').on('change', function () {
+		dataTools.saveItem('sortMethod', $('#sortMethod').val());
+		lichess.LichessStudySort();
+	});
+
+	$('#chk_sort_desc').on('click', function () {
+		dataTools.saveItem('sortDirection', $('#chk_sort_desc').is(':checked'));
+		lichess.LichessStudySort();
+	});
+
 
 	// Tooltip
 	$(document).ready(function () {
