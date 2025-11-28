@@ -280,12 +280,12 @@ async function accessLichessAPI() {
 		return;
 	}
 
+	alert(JSON.stringify('Retrieving Data'))
+
 	// Populate the list (studies only)
 	await studyListing.forEach(async (workspace) => {
 		createListOfStudies(workspace);
 	});
-
-	alert(JSON.stringify(studyListing))
 
 	// Sort the list by settings
 	LichessStudySort();
