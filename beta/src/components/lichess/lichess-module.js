@@ -273,14 +273,14 @@ async function accessLichessAPI() {
 	// Get the list of studies available for this user (First call)
 	let studyListing = await getStudiesListing(userID);
 
+	alert(JSON.stringify('Retrieving Data'))
+
 	// Show message in case there are no studies for this user
 	if (studyListing.length === 0) {
 		createAccordianEntry('#lichess_studies_list', 'No studies available', '');
 		removeLoadingSpinner();
 		return;
 	}
-
-	alert(JSON.stringify('Retrieving Data'))
 
 	// Populate the list (studies only)
 	await studyListing.forEach(async (workspace) => {
