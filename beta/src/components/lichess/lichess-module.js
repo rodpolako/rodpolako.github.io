@@ -518,6 +518,8 @@ function initalizeLichess() {
 	// Clear any already loaded content
 	$('#lichess_studies_list').empty();
 
+	alert(dataTools.readItem('StudyListing'))
+
 	// If a copy of the list exists in cache, load that by default
 	if (dataTools.readItem('StudyListing') !== null) {
 		let studyListing = JSON.parse(dataTools.readItem('StudyListing'));
