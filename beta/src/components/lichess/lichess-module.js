@@ -285,6 +285,8 @@ async function accessLichessAPI() {
 		createListOfStudies(workspace);
 	});
 
+	alert(JSON.stringify(studyListing))
+
 	// Sort the list by settings
 	LichessStudySort();
 
