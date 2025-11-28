@@ -273,7 +273,8 @@ async function accessLichessAPI() {
 	// Get the list of studies available for this user (First call)
 	let studyListing = await getStudiesListing(userID);
 
-	alert(JSON.stringify('Retrieving Data'))
+	alert('Retrieving Data');
+	console.log('Testpoint');
 
 	// Show message in case there are no studies for this user
 	if (studyListing.length === 0) {
