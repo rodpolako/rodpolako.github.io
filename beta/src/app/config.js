@@ -22,7 +22,7 @@ const configuration = {
 		maxDepth: 50,
 		embedYoutube: true,
 		sortMethod: 'name',
-		sortDirection: false
+		sortDirection: false,
 	},
 
 	// Feature flags for components

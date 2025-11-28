@@ -359,13 +359,12 @@ function loadSettings() {
 		$('#maxPlyValue').text('∞');
 	}
 
-	$('#sortMethod').val(dataTools.readItem('sortMethod'))
+	$('#sortMethod').val(dataTools.readItem('sortMethod'));
 
 	$('#chk_sort_desc').prop('checked', true);
 	if (dataTools.readItem('sortDirection') === 'false') {
 		$('#chk_sort_desc').prop('checked', false);
 	}
-	
 }
 
 /**
@@ -1950,7 +1949,6 @@ $(() => {
 		dataTools.saveItem('sortDirection', $('#chk_sort_desc').is(':checked'));
 		lichess.LichessStudySort();
 	});
-
 
 	// Tooltip
 	$(document).ready(function () {

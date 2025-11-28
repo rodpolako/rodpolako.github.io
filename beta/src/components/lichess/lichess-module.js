@@ -45,7 +45,6 @@ async function checkUserIDExists() {
  * @returns
  */
 async function fetchLichessData(fetchURL, studyID) {
-	//, usePAT = true
 	const headers = {
 		Authorization: 'Bearer ' + lichessToken,
 	};
@@ -181,7 +180,6 @@ async function getStudiesListing(userID) {
 	var ndjson = await fetchLichessData('https://lichess.org/api/study/by/' + userID);
 
 	if (ndjson === false) {
-		//$('#lichess_close').click();
 		removeLoadingSpinner();
 		return [];
 	}
@@ -214,8 +212,6 @@ async function validateUserAccess() {
 
 	// Determine if user exists, exit early if not present
 	if (userDetails.status === 404) {
-		//sharedTools.showErrorModal('Lichess user not found. Please check your entry in settings and try again.');
-		//$('#lichess_close').click();
 		$('#lichess_study_owner').empty();
 		$('#lichess_study_owner').append(': ' + userID + ' not found');
 		removeLoadingSpinner();
@@ -225,15 +221,14 @@ async function validateUserAccess() {
 	return true;
 }
 
-function LichessStudySort(){
-
+function LichessStudySort() {
 	// Get value of sortMethod
-	let sortMethod = dataTools.readItem('sortMethod')
-	
+	let sortMethod = dataTools.readItem('sortMethod');
+
 	// Get value of chk_sort_desc
-	let sortDirection = true
-	if (dataTools.readItem('sortDirection') === 'false'){
-		sortDirection = false
+	let sortDirection = true;
+	if (dataTools.readItem('sortDirection') === 'false') {
+		sortDirection = false;
 	}
 
 	// clear the existing list first
@@ -542,4 +537,4 @@ $(document).ready(function () {
 	initalizeLichess();
 });
 
-export { accessLichessAPI, initalizeLichess,LichessStudySort };
+export { accessLichessAPI, initalizeLichess, LichessStudySort };
