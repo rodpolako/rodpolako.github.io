@@ -72,6 +72,10 @@ function hashJSON(obj) {
  * @returns
  */
 function sort_by_key(array, key, descending = false) {
+	if (array === null) {
+		return;
+	}
+
 	return array.sort(function (a, b) {
 		var x = a[key];
 		var y = b[key];
