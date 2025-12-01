@@ -271,11 +271,10 @@ async function accessLichessAPI() {
 	showLoadingSpinner('#lichess_studies_div');
 
 	// Get the list of studies available for this user (First call)
-	let studyListing = getStudiesListing(userID);
+	let studyListing = await getStudiesListing(userID);
 
-	alert('Retrieving Data');
-	console.log('Testpoint');
-	alert(studyListing);
+	// Save a copy of the data to the cache for future reloads
+	dataTools.saveItem('StudyListing', JSON.stringify(studyListing));
 
 	// Show message in case there are no studies for this user
 	if (studyListing.length === 0) {
@@ -518,8 +517,6 @@ function initalizeLichess() {
 
 	// Clear any already loaded content
 	$('#lichess_studies_list').empty();
-
-	alert(dataTools.readItem('StudyListing'))
 
 	// If a copy of the list exists in cache, load that by default
 	if (dataTools.readItem('StudyListing') !== null) {
