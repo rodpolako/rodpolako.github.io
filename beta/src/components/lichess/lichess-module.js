@@ -275,6 +275,7 @@ async function accessLichessAPI() {
 
 	alert('Retrieving Data');
 	console.log('Testpoint');
+	alert(studyListing);
 
 	// Show message in case there are no studies for this user
 	if (studyListing.length === 0) {
