@@ -271,7 +271,7 @@ async function accessLichessAPI() {
 	showLoadingSpinner('#lichess_studies_div');
 
 	// Get the list of studies available for this user (First call)
-	let studyListing = await getStudiesListing(userID);
+	let studyListing = getStudiesListing(userID);
 
 	alert('Retrieving Data');
 	console.log('Testpoint');
