@@ -421,9 +421,13 @@ function deleteAllShapeAnnotations() {
 	createCanvas();
 }
 
+function getHostName(url) {
+	const urlObject = new URL(url);
+	const hostnameFromUrl = urlObject.hostname;
+	return hostnameFromUrl;
+}
 
 function formatLinks(inputString) {
-
 	var returnlink = linkifyHtml(inputString, {
 		target: 'blank',
 		render: ({ tagName, attributes, content }) => {
@@ -438,7 +442,8 @@ function formatLinks(inputString) {
 			if (
 				attributes.href &&
 				dataTools.readItem('embedYoutube') === 'true' &&
-				(attributes.href.indexOf('youtu.be') >= 0 || attributes.href.indexOf('www.youtube.com') >= 0)
+				(getHostName(attributes.href) === 'youtu.be' || getHostName(attributes.href) === 'www.youtube.com')
+				//(attributes.href.indexOf('youtu.be') >= 0 || attributes.href.indexOf('www.youtube.com') >= 0)
 			) {
 				// Youtube URL detected
 				var query = attributes.href.substring(attributes.href.indexOf('?'));
@@ -582,7 +587,7 @@ function annotate() {
 	}
 
 	// Don't attempt annotation if there is no move
-	if (currentPuzzle.moves.length === 0){
+	if (currentPuzzle.moves.length === 0) {
 		return;
 	}
 
