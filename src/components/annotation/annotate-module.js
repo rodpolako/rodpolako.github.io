@@ -421,6 +421,14 @@ function deleteAllShapeAnnotations() {
 	createCanvas();
 }
 
+/**
+ * Get the hostname from a given URL
+ * Used to prevent security issue possible when using substring check instead
+ * 
+ * @param {string} url - The URL to process
+ * @returns The hostname of the URL
+ */
+
 function getHostName(url) {
 	const urlObject = new URL(url);
 	const hostnameFromUrl = urlObject.hostname;
@@ -431,7 +439,6 @@ function formatLinks(inputString) {
 	var returnlink = linkifyHtml(inputString, {
 		target: 'blank',
 		render: ({ tagName, attributes, content }) => {
-			//console.log({ tagName, attributes, content });
 
 			var attributesBuilder = '';
 
@@ -443,7 +450,6 @@ function formatLinks(inputString) {
 				attributes.href &&
 				dataTools.readItem('embedYoutube') === 'true' &&
 				(getHostName(attributes.href) === 'youtu.be' || getHostName(attributes.href) === 'www.youtube.com')
-				//(attributes.href.indexOf('youtu.be') >= 0 || attributes.href.indexOf('www.youtube.com') >= 0)
 			) {
 				// Youtube URL detected
 				var query = attributes.href.substring(attributes.href.indexOf('?'));
