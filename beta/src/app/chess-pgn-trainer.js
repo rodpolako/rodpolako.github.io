@@ -32,8 +32,6 @@ let moveHistory;
 let puzzleset;
 let errorcount;
 let error;
-let elapsedTimeHHMMSS;
-let avgTimeHHMMSS;
 let errorRate;
 let setcomplete;
 let stats;
@@ -495,7 +493,6 @@ function goToNextPuzzle() {
 	}
 
 	// Check to see if the set is complete
-
 	if (increment + 1 === puzzleset.length) {
 		setcomplete = true;
 	}
@@ -518,7 +515,7 @@ function goToNextPuzzle() {
 
 /**
  * Create a PGN of the failures into memory
- * 
+ *
  * @returns A modified version of the PGN to add back any current option tags along with each variation that failed
  */
 function createMistakesPGN() {
@@ -573,7 +570,7 @@ function retryFailed() {
 	if (failedVariations.size > 0) {
 		var mistakesPGN = createMistakesPGN();
 		$('#resmodal_close').click();
-		postPGNReadSetup(mistakesPGN, 'retry');
+		postPGNReadSetup(mistakesPGN, currentFileName + ' - retry');
 		startTest();
 	}
 }
@@ -595,7 +592,7 @@ function gameOver() {
 	generateStats();
 
 	// Add check for auto-retry of failures - If not active (or no failures) then just show the results
-	if (dataTools.readItem('autoRetryFailures') == 'true'  && failedVariations.size > 0) {
+	if (dataTools.readItem('autoRetryFailures') == 'true' && failedVariations.size > 0) {
 		retryFailed();
 		return;
 	}
@@ -1176,8 +1173,8 @@ function loadPuzzle(PGNPuzzle) {
 	}
 
 	// Load the moves and comments of the PGN into memory
-		
-	// If there is commentary before the first move, show it in the annotation panel
+
+	// If there is commentary before the first move, add it to the current game
 	if (PGNPuzzle.gameComment?.comment) {
 		game.setComment(PGNPuzzle.gameComment.comment);
 	}
@@ -1195,15 +1192,18 @@ function loadPuzzle(PGNPuzzle) {
 
 		// Add the drawings in the puzzle to the the current game if there are any
 		if (move.commentDiag?.colorFields) {
-			if (game.getComment() === undefined) {game.setComment('')}
-			game.setComment(game.getComment() + '[%csl ' + move.commentDiag.colorFields.join(",")+ ']');
+			if (game.getComment() === undefined) {
+				game.setComment('');
+			}
+			game.setComment(game.getComment() + '[%csl ' + move.commentDiag.colorFields.join(',') + ']');
 		}
 
 		if (move.commentDiag?.colorArrows) {
-			if (game.getComment() === undefined) {game.setComment('')}
-			game.setComment(game.getComment() + '[%cal ' + move.commentDiag.colorArrows.join(",")+ ']');
+			if (game.getComment() === undefined) {
+				game.setComment('');
+			}
+			game.setComment(game.getComment() + '[%cal ' + move.commentDiag.colorArrows.join(',') + ']');
 		}
-
 	});
 
 	// Enable the next button if there are no moves to play at all or if the first move is also a null move, regardless of the Next button setting
@@ -1523,8 +1523,8 @@ function testClipboard() {
 
 /**
  * Generate the performance data to be used in the CSV/Clipboard output
- * 
- * @param {*} separator -   The value to use to separate the individual values. 
+ *
+ * @param {*} separator -   The value to use to separate the individual values.
  * 							Can include things like '\t' (for tab-separated) or ',' for comma-separated
  * @returns String-formatted data to be used in the output
  */
@@ -1576,12 +1576,11 @@ function outputStats2CSV() {
  */
 function generateStats() {
 	// Compute the time and error values
-	const currentDate = new Date().toJSON().slice(0, 10);
 	const endDateTime = new Date();
 	const ElapsedTimeSeconds = (endDateTime - startDateTime - pauseDateTimeTotal) / 1000; // Subtracting the paused time from total elapsed time
-	elapsedTimeHHMMSS = new Date(ElapsedTimeSeconds * 1000).toISOString().slice(11, 19);
+	const elapsedTimeHHMMSS = new Date(ElapsedTimeSeconds * 1000).toISOString().slice(11, 19); // Compute the elapsed time from start to finish
 	const AvgTimeSeconds = Math.round(ElapsedTimeSeconds / puzzleset.length);
-	avgTimeHHMMSS = new Date(AvgTimeSeconds * 1000).toISOString().slice(11, 19);
+	const avgTimeHHMMSS = new Date(AvgTimeSeconds * 1000).toISOString().slice(11, 19);
 	errorRate = errorcount / puzzleset.length;
 
 	// Get the mode (random or sequential)
@@ -1590,13 +1589,50 @@ function generateStats() {
 		mode = 'Random';
 	}
 
+	// Format the ending date/time into a timestamp
+	const date = endDateTime.toISOString().split('T')[0];
+	const time = endDateTime.toTimeString().split(' ')[0];
+
+	// Find out if this is a re-attempt
+	let retryFlag = false;
+	if (currentFileName.includes('retry')) {
+		retryFlag = true;
+	}
+
+	// Find out if this is a Lichess study
+	let lichessFlag = false;
+	if (currentFileName.includes('https://lichess.org/api/study')) {
+		lichessFlag = true;
+	}
+
 	// Build the stats object
 	stats = {};
-
-	stats.date = currentDate;
+	stats.date = `${date} ${time}`;
 	stats.filename = currentFileName;
-	stats.round = '';
 	stats.series = puzzleset[0].tags.Event;
+
+	// If this file was a Lichess Study
+	if (lichessFlag) {
+		// Overwrite the filename with the Study name
+		if (puzzleset[0].tags?.StudyName) {
+			stats.filename = puzzleset[0].tags.StudyName;
+		}
+
+		if (retryFlag) {
+			stats.filename = stats.filename + ' - retry';
+		}
+
+		// Overwrite the series name with the chapter name
+		if (puzzleset[0].tags?.ChapterName) {
+			stats.series = puzzleset[0].tags.ChapterName;
+		}
+
+		// If "entire study" was selected then use that instead for the series name
+		if (puzzleset.length > 1) {
+			stats.series = 'Entire Study';
+		}
+	}
+
 	stats.mode = mode;
 	stats.setlength = puzzleset.length;
 	stats.errors = errorcount;
@@ -1653,8 +1689,8 @@ function showStats() {
 
 /**
  * Validates the max depth input and resets it if invalid
- * 
- * @param {*} maxDepthNumber 
+ *
+ * @param {*} maxDepthNumber
  * @returns A valid maximum depth value for variation pruning
  */
 function validateMaxDepth(maxDepthNumber) {
@@ -1671,7 +1707,7 @@ function validateMaxDepth(maxDepthNumber) {
 
 /**
  * Remove variations from array that are identical.  Used when variations are pruned due to max depth being shorter than variation length
- * 
+ *
  * @param {*} puzzlearray - The array of puzzles/variations to de-duplicate
  * @returns A de-duplicated copy of the array
  */

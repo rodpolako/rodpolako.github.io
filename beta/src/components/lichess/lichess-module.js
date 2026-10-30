@@ -439,6 +439,7 @@ function addCustomEvent(id, url) {
 		resetGame();
 		$(this).blur();
 		$('#lichess_close').click();
+		console.log(chapterData);
 		postPGNReadSetup(chapterData, url);
 		removeLoadingSpinner();
 	});
