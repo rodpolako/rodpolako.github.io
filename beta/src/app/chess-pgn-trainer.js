@@ -1023,6 +1023,10 @@ function updateProgressBar(partial_value, total_value) {
 function updateAnalysisLink() {
 	if (game.fen()) {
 		var lichessURL = 'https://lichess.org/analysis/' + game.fen().replace(/ /g, '_');
+
+		if (game.turn() === 'b') {
+			lichessURL = lichessURL + '?color=black'
+		}
 	}
 
 	if (lichessURL) {
