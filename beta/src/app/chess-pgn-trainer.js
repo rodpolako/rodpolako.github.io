@@ -1025,7 +1025,7 @@ function updateAnalysisLink() {
 		var lichessURL = 'https://lichess.org/analysis/' + game.fen().replace(/ /g, '_');
 
 		if (game.turn() === 'b') {
-			lichessURL = lichessURL + '?color=black'
+			lichessURL = lichessURL + '?color=black';
 		}
 	}
 
@@ -1599,7 +1599,8 @@ function generateStats() {
 
 	// Find out if this is a re-attempt
 	let retryFlag = false;
-	if (currentFileName.includes('retry')) {
+	if (currentFileName.includes(' - retry')) {
+		currentFileName = currentFileName.replace(' - retry', '');
 		retryFlag = true;
 	}
 
@@ -1613,6 +1614,7 @@ function generateStats() {
 	stats = {};
 	stats.date = `${date} ${time}`;
 	stats.filename = currentFileName;
+	stats.retry = retryFlag;
 	stats.series = puzzleset[0].tags.Event;
 
 	// If this file was a Lichess Study
@@ -1620,10 +1622,6 @@ function generateStats() {
 		// Overwrite the filename with the Study name
 		if (puzzleset[0].tags?.StudyName) {
 			stats.filename = puzzleset[0].tags.StudyName;
-		}
-
-		if (retryFlag) {
-			stats.filename = stats.filename + ' - retry';
 		}
 
 		// Overwrite the series name with the chapter name
@@ -1643,6 +1641,11 @@ function generateStats() {
 	stats.totaltime = elapsedTimeHHMMSS;
 	stats.avgtime = avgTimeHHMMSS;
 	stats.errorrate = (errorRate * 100).toFixed(1) + '%';
+
+	// Keep letters (including accents), numbers, spaces, underscore, hyphen and periods for the filename and series columns
+	// as some special characters will cause the csv writing function to crash
+	stats.filename = stats.filename.replace(/[^\p{L}\p{N}\s_\-, .\n]/gu, '');
+	stats.series = stats.series.replace(/[^\p{L}\p{N}\s_\-, .\n:]/gu, '');  // Also keep the colon
 
 	// add this object to the collection
 	resultsStats.push(stats);
