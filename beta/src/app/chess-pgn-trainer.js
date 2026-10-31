@@ -1644,8 +1644,8 @@ function generateStats() {
 
 	// Keep letters (including accents), numbers, spaces, underscore, hyphen and periods for the filename and series columns
 	// as some special characters will cause the csv writing function to crash
-	stats.filename = stats.filename.replace(/[^\p{L}\p{N}\s_\-, .\n]/gu, '');
-	stats.series = stats.series.replace(/[^\p{L}\p{N}\s_\-, .\n:]/gu, '');  // Also keep the colon
+	stats.filename = stats.filename.replace(/[^\p{L}\p{N}\s_\- .\n]/gu, '');
+	stats.series = stats.series.replace(/[^\p{L}\p{N}\s_\- .\n:]/gu, '');  // Also keep the colon
 
 	// add this object to the collection
 	resultsStats.push(stats);
