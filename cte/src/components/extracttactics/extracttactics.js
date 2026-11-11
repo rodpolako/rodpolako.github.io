@@ -279,7 +279,7 @@ function createLichessAnnotation(White, Black, site, UTCDate, playedMove, qualit
 	annotation = White + ' vs. ' + Black + '\n\n';
 
 	annotation = annotation + 'In a <a target="_blank" href="' + site + '">Lichess game</a> played on ' + UTCDate.value + ', ';
-	annotation = annotation + 'you played ' + playedMoveComment + ', find a better move.';
+	annotation = annotation + 'you played ' + playedMoveComment + ', find a better move.\n';
 
 	return annotation;
 }
@@ -295,7 +295,7 @@ function createOtherAnnotation(White, Black, Event, Date, playedMove, quality) {
 	annotation = White + ' vs. ' + Black + '\n\n';
 
 	annotation = annotation + 'In a game played at ' + Event + ' on ' + Date.value + ', ';
-	annotation = annotation + 'you played ' + playedMoveComment + ', find a better move.';
+	annotation = annotation + 'you played ' + playedMoveComment + ', find a better move.\n';
 
 	return annotation;
 }
