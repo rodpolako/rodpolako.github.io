@@ -155,8 +155,17 @@ function extractLines(PGNFile, options) {
 					// Add comments indicating the previous bad move and its quality
 					let annotation = createLichessAnnotation(game.tags.White, game.tags.Black, game.tags.Site, game.tags.UTCDate, playedMove, quality);
 
+					let isLichessSite = false;
+					try {
+						const parsedSite = new URL(game.tags.Site);
+						const hostname = parsedSite.hostname.toLowerCase();
+						isLichessSite = parsedSite.protocol === 'https:' && (hostname === 'lichess.org' || hostname.endsWith('.lichess.org'));
+					} catch (e) {
+						isLichessSite = false;
+					}
+
 					// This isn't a Lichess game, create a generic annotation instead
-					if (!game.tags.Site.includes('https://lichess.org/')) {
+					if (!isLichessSite) {
 						annotation = createOtherAnnotation(game.tags.White, game.tags.Black, game.tags.Event, game.tags.Date, playedMove, quality);
 					}
 
